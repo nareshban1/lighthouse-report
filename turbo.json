@@ -18,6 +18,7 @@
       "persistent": true
     },
     "test": {},
-    "test:lighthouse": {}
+    "test:lighthouse:mobile": {},
+    "test:lighthouse:desktop": {}
   }
 }
