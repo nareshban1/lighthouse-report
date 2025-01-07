@@ -3,7 +3,7 @@ name: Lighthouse Test Web App
 on:
   workflow_run:
     workflows:
-      - Build Web Project
+      - Build Web App
     types:
       - completed
 jobs:
