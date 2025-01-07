@@ -20,11 +20,13 @@ jobs:
   build-deploy-test:
     runs-on: ubuntu-latest
     steps:
-      - name: Download Artifact
+      - name: Download Build Artifact
         uses: actions/download-artifact@v3
+        env:
+          PR_NUMBER: ${{ github.event.number }}
         with:
-          name: build-artifact
-          path: ./build
+          name: pr_number
+          path: ./pr
 
       - name: Run Lighthouse Tests
         run: |
