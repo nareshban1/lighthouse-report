@@ -2,12 +2,16 @@
   "name": "lighthouse-report",
   "private": true,
   "scripts": {
+    "build:web": "turbo run web#build ",
+    "test:web": "turbo run web#test:lighthouse ",
     "build": "turbo build",
     "dev": "turbo dev",
     "lint": "turbo lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\""
   },
   "devDependencies": {
+    "@lhci/cli": "^0.14.0",
+    "@lhci/server": "^0.14.0",
     "prettier": "^3.2.5",
     "turbo": "^2.3.3",
     "typescript": "5.5.4"
