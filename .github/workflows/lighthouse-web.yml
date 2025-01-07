@@ -8,7 +8,12 @@ on:
     paths:
       - "apps/web/**"
       - "packages/**"
-
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - develop
+      - main
+    types: [opened, synchronize]
 jobs:
   build-deploy-test:
     runs-on: ubuntu-latest
@@ -16,23 +21,57 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v3
 
+      - uses: pnpm/action-setup@v4
+
       - name: Use Node.js 18.x
         uses: actions/setup-node@v3
         with:
           node-version: "18"
 
-      - name: Install Dependencies
-        run: pnpm
+      - name: Install PNPM
+        run: npm install -g pnpm
+
+      - name: Installing Dependencies
+        run: pnpm install
 
       - name: Build App
         run: pnpm run build
 
       - name: Run Lighthouse Tests
         run: |
-          pnpm install -g @lhci/cli@0.11.x
-          lhci autorun
+          pnpm test:web
         env:
           LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
+
+      - name: Slack Notification on FAILURE
+        if: failure()
+        uses: tokorom/action-slack-incoming-webhook@main
+        env:
+          INCOMING_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        with:
+          text: A build and (*deploy)  package has failed for Web :crying_cat_face:.
+          attachments: |
+            [
+              {
+                "color": "danger",
+                "author_name": "${{ github.actor }}",
+                "author_icon": "${{ github.event.sender.avatar_url }}",
+                "fields": [
+                  {
+                    "title": "Commit Message",
+                    "value": "${{ github.event.head_commit.message }}"
+                  },
+                  {
+                    "title": "GitHub Actions URL",
+                    "value": "${{ github.event.repository.url }}/actions/runs/${{ github.run_id }}"
+                  },
+                  {
+                    "title": "Compare URL",
+                    "value": "${{ github.event.compare }}"
+                  }
+                ]
+              }
+            ]
 
       - name: Upload Lighthouse Reports
         uses: actions/upload-artifact@v3
