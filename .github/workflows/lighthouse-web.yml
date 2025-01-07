@@ -22,14 +22,14 @@ jobs:
           node-version: "18"
 
       - name: Install Dependencies
-        run: yarn
+        run: pnpm
 
       - name: Build App
-        run: yarn run build
+        run: pnpm run build
 
       - name: Run Lighthouse Tests
         run: |
-          npm install -g @lhci/cli@0.11.x
+          pnpm install -g @lhci/cli@0.11.x
           lhci autorun
         env:
           LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
