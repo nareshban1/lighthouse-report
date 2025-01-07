@@ -2,8 +2,8 @@ name: Lighthouse Test Web App
 
 on:
   workflow_run:
-    workflows:
-      - Build Web App
+    workflows: ["Build Web App"]
+    branches: [main, develop]
     types:
       - completed
 
