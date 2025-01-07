@@ -3,7 +3,7 @@ module.exports = {
     collect: {
       url: "http://localhost:3000",
       startServerCommand: "next start",
-      numberOfRuns: 1,
+      numberOfRuns: 3,
     },
     assert: {
       preset: "lighthouse:no-pwa",

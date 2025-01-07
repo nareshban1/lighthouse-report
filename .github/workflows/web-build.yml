@@ -1,0 +1,44 @@
+name: Build Web App
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+    paths:
+      - "apps/web/**"
+      - "packages/**"
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - develop
+      - main
+    types: [opened, synchronize]
+jobs:
+  build-deploy-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - uses: pnpm/action-setup@v4
+
+      - name: Use Node.js 18.x
+        uses: actions/setup-node@v3
+        with:
+          node-version: "18"
+
+      - name: Install PNPM
+        run: npm install -g pnpm
+
+      - name: Installing Dependencies
+        run: pnpm install
+
+      - name: Build Web App
+        run: pnpm run build
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: build-artifact
+          path: ./build
