@@ -47,8 +47,3 @@ jobs:
         with:
           name: build-artifact
           path: ./build
-  on-success:
-    runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
-    steps:
-      - run: echo 'The Web Build Action Have Passed'
