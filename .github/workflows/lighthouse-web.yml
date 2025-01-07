@@ -6,6 +6,11 @@ on:
       - Build Web App
     types:
       - completed
+
+permissions:
+  contents: read
+  actions: write
+
 jobs:
   build-deploy-test:
     runs-on: ubuntu-latest
