@@ -50,7 +50,7 @@ jobs:
         id: lighthouse
         with:
           urls: |
-            http://localhost:3000
+            https://nextjs.org/
           temporaryPublicStorage: true
       - name: Job successful feedback
         if: ${{ success() }}
