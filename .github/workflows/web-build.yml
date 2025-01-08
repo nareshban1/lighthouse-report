@@ -35,6 +35,12 @@ jobs:
       - name: Installing Dependencies
         run: pnpm install
 
+      - name: Create .env file
+        run: |
+          echo "creating .env file"
+          echo "LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
+          LHCI_TOKEN: ${{ secrets.LHCI_TOKEN }}
+          LHCI_SERVER_BASE_URL: ${{ secrets.LHCI_SERVER_BASE_URL }}"> .env
       - name: Build Web Project
         run: pnpm run build
 
@@ -43,10 +49,7 @@ jobs:
         run: |
           pnpm install -g @lhci/cli
           pnpm test:web:mobile
-        env:
-          LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
-          LHCI_TOKEN: ${{ secrets.LHCI_TOKEN }}
-          LHCI_SERVER_BASE_URL: ${{ secrets.LHCI_SERVER_BASE_URL }}
+
       - name: Slack Notification on TEST SUCCESS
         if: success()
         uses: tokorom/action-slack-incoming-webhook@main
