@@ -55,7 +55,7 @@ jobs:
           echo "Triggered by **${{ github.actor	}}** ∙ deployed from **${{ github.ref_name	}}**" >> $GITHUB_STEP_SUMMARY
           echo ' ' >> $GITHUB_STEP_SUMMARY
           echo "**Lighthouse results:**" >> $GITHUB_STEP_SUMMARY
-          echo "Performance: ${{ steps.lighthouse.outputs.report_json}}" >> $GITHUB_STEP_SUMMARY
+          echo "Performance: ${{ steps.lighthouse.outputs }}" >> $GITHUB_STEP_SUMMARY
 
       - name: Job failed feedback
         if: ${{ failure() }}
