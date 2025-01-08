@@ -45,6 +45,8 @@ jobs:
           pnpm test:web:mobile
         env:
           LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
+          LHCI_TOKEN: ${{ secrets.LHCI_TOKEN }}
+          LHCI_SERVER_BASE_URL: ${{ secrets.LHCI_SERVER_BASE_URL }}
       - name: Slack Notification on TEST SUCCESS
         if: success()
         uses: tokorom/action-slack-incoming-webhook@main
