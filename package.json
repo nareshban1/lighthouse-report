@@ -3,7 +3,9 @@
   "private": true,
   "scripts": {
     "build:web": "turbo run web#build ",
-    "test:web": "turbo run web#test:lighthouse:mobile web#test:lighthouse:desktop ",
+    "test:web": "turbo run web#test:lighthouse:mobile web#test:lighthouse:desktop",
+    "test:web:mobile": "turbo run web#test:lighthouse:mobile",
+    "test:web:desktop": "turbo run web#test:lighthouse:desktop",
     "build": "turbo build",
     "dev": "turbo dev",
     "lint": "turbo lint",
