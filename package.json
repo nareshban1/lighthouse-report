@@ -2,14 +2,18 @@
   "name": "lighthouse-report",
   "private": true,
   "scripts": {
-    "build:web": "turbo run web#build ",
-    "test:web": "turbo run web#test:lighthouse:mobile web#test:lighthouse:desktop ",
+    "build:web": "dotenv -- turbo run web#build ",
+    "test:web": "dotenv -- turbo run web#test:lighthouse:mobile web#test:lighthouse:desktop",
+    "test:web:mobile": "dotenv -- turbo run web#test:lighthouse:mobile",
+    "test:web:desktop": "dotenv -- turbo run web#test:lighthouse:desktop",
     "build": "turbo build",
     "dev": "turbo dev",
     "lint": "turbo lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\""
   },
   "devDependencies": {
+    "dotenv-cli": "^7.3.0",
+    "env-cmd": "^10.1.0",
     "@lhci/cli": "^0.14.0",
     "@lhci/server": "^0.14.0",
     "prettier": "^3.2.5",

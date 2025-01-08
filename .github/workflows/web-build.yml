@@ -15,10 +15,6 @@ on:
       - main
     types: [opened, synchronize]
 
-permissions:
-  contents: read
-  actions: write
-
 jobs:
   build-deploy-test:
     runs-on: ubuntu-latest
@@ -42,13 +38,55 @@ jobs:
       - name: Build Web Project
         run: pnpm run build
 
-      - name: Upload Build Artifact
-        env:
-          PR_NUMBER: ${{ github.event.number }}
+      - name: Run Lighthouse Tests
+        id: lighthouse
         run: |
-          mkdir -p ./pr
-          echo $PR_NUMBER > ./pr/pr_number
-      - uses: actions/upload-artifact@v4
+          pnpm install -g @lhci/cli
+          pnpm test:web:mobile
+        env:
+          LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
+      - name: Slack Notification on TEST SUCCESS
+        if: success()
+        uses: tokorom/action-slack-incoming-webhook@main
+        env:
+          INCOMING_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }},
+
         with:
-          name: pr_number
-          path: pr/
+          text: Lighthouse Test was successful :tada:.
+          attachments: |
+            [
+              {
+                "color": "good",
+                "author_name": "${{ github.actor }}",
+                "author_icon": "${{ github.event.sender.avatar_url }}",
+                "fields": [
+                  {
+                    "title": "GitHub Actions URL",
+                    "value": "${{ github.event.repository.url }}/actions/runs/${{ github.run_id }}"
+                  },
+               
+                ]
+              }
+            ]
+
+      - name: Slack Notification on TEST FAILURE
+        if: failure()
+        uses: tokorom/action-slack-incoming-webhook@main
+        env:
+          INCOMING_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        with:
+          text: Lighthouse Test Failed  :crying_cat_face:.
+          attachments: |
+            [
+              {
+                "color": "danger",
+                "author_name": "${{ github.actor }}",
+                "author_icon": "${{ github.event.sender.avatar_url }}",
+                "fields": [
+                  {
+                    "title": "GitHub Actions URL",
+                    "value": "${{ github.event.repository.url }}/actions/runs/${{ github.run_id }}"
+                  }
+                ]
+              }
+            ]
