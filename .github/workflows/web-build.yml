@@ -65,6 +65,8 @@ jobs:
         run: |
           pnpm install -g @lhci/cli
           pnpm test:web:mobile
+        env:
+          LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }},
 
       - name: Slack Notification on TEST SUCCESS
         if: success()
