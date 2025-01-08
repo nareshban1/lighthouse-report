@@ -43,7 +43,7 @@ jobs:
         run: |
           pnpm install -g @lhci/cli
           pnpm test:web:mobile
-          JSON_OUTPUT=$(lhci collect --output=json)
+          JSON_OUTPUT=$( pnpm test:web:mobile -- --output=json)
           echo "::set-output name=report_json::$JSON_OUTPUT"
         env:
           LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
