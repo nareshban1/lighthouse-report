@@ -54,9 +54,9 @@ jobs:
       - name: Create .env file
         run: |
           echo "creating .env file"
-          echo "LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
-          LHCI_TOKEN: ${{ secrets.LHCI_TOKEN }}
-          LHCI_SERVER_BASE_URL: ${{ secrets.LHCI_SERVER_BASE_URL }}"> .env
+          echo "LHCI_GITHUB_APP_TOKEN=${{ secrets.LHCI_GITHUB_APP_TOKEN }}
+          LHCI_TOKEN=${{ secrets.LHCI_TOKEN }}
+          LHCI_SERVER_BASE_URL=${{ secrets.LHCI_SERVER_BASE_URL }}"> .env
       - name: Build Web Project
         run: pnpm run build
 
