@@ -52,20 +52,6 @@ jobs:
           urls: |
             https://nextjs.org/
           temporaryPublicStorage: true
-      - name: Job successful feedback
-        if: ${{ success() }}
-        run: |
-          echo '### Successfully published to Deploy Now :white_check_mark:' >> $GITHUB_STEP_SUMMARY
-          echo "Triggered by **${{ github.actor	}}** ∙ deployed from **${{ github.ref_name	}}**" >> $GITHUB_STEP_SUMMARY
-          echo ' ' >> $GITHUB_STEP_SUMMARY
-          echo "**Lighthouse results:**" >> $GITHUB_STEP_SUMMARY
-          echo "Performance: ${{ fromJson(steps.lighthouse.outputs.manifest)[0].summary.performance}}" >> $GITHUB_STEP_SUMMARY
-
-      - name: Job failed feedback
-        if: ${{ failure() }}
-        run: |
-          echo '### Publishing to Deploy Now was not successful :cross:' >> $GITHUB_STEP_SUMMARY
-          echo "Unfortunately, the deployment failed." >> $GITHUB_STEP_SUMMARY
 
       - name: Slack Notification on TEST SUCCESS
         if: success()
@@ -88,7 +74,7 @@ jobs:
                   },
                   {
                     "title": "Lighthouse Report URL",
-                    "value": "${{ github.event.compare }}"
+                    "value": " ${{ fromJson(steps.lighthouse.outputs.manifest)[0].htmlPath}}"
                   }
                 ]
               }
@@ -114,7 +100,7 @@ jobs:
                   },
                   {
                     "title": "Lighthouse Report URL",
-                    "value": "${{ github.event.compare }}"
+                    "value": " ${{ fromJson(steps.lighthouse.outputs.manifest)[0].htmlPath}}"
                   }
                 ]
               }
