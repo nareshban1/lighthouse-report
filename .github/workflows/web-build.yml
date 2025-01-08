@@ -39,15 +39,19 @@ jobs:
         run: pnpm run build
 
       - name: Run Lighthouse Tests
-        id: lighthouse
+
         run: |
           pnpm install -g @lhci/cli
           pnpm test:web:mobile
-          JSON_OUTPUT=$( pnpm test:web:mobile -- --output=json)
-          echo "::set-output name=report_json::$JSON_OUTPUT"
         env:
           LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
-
+      - name: Audit URLs using Lighthouse
+        uses: treosh/lighthouse-ci-action@v12
+        id: lighthouse
+        with:
+          urls: |
+            http://localhost:3000
+          temporaryPublicStorage: true
       - name: Job successful feedback
         if: ${{ success() }}
         run: |
@@ -55,7 +59,7 @@ jobs:
           echo "Triggered by **${{ github.actor	}}** ∙ deployed from **${{ github.ref_name	}}**" >> $GITHUB_STEP_SUMMARY
           echo ' ' >> $GITHUB_STEP_SUMMARY
           echo "**Lighthouse results:**" >> $GITHUB_STEP_SUMMARY
-          echo "Performance: ${{ steps.lighthouse.outputs }}" >> $GITHUB_STEP_SUMMARY
+          echo "Performance: ${{ fromJson(steps.lighthouse.outputs.manifest)[0].summary.performance}}" >> $GITHUB_STEP_SUMMARY
 
       - name: Job failed feedback
         if: ${{ failure() }}
