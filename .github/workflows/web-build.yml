@@ -42,9 +42,26 @@ jobs:
         id: lighthouse
         run: |
           pnpm install -g @lhci/cli
-          lhci autorun --upload.target=temporary-public-storage || echo "LHCI failed!"
+          pnpm test:web:mobile
+          JSON_OUTPUT=$(lhci collect --output=json)
+          echo "::set-output name=report_json::$JSON_OUTPUT"
         env:
           LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
+
+      - name: Job successful feedback
+        if: ${{ success() }}
+        run: |
+          echo '### Successfully published to Deploy Now :white_check_mark:' >> $GITHUB_STEP_SUMMARY
+          echo "Triggered by **${{ github.actor	}}** ∙ deployed from **${{ github.ref_name	}}**" >> $GITHUB_STEP_SUMMARY
+          echo ' ' >> $GITHUB_STEP_SUMMARY
+          echo "**Lighthouse results:**" >> $GITHUB_STEP_SUMMARY
+          echo "Performance: ${{ steps.lighthouse.outputs.report_json}}" >> $GITHUB_STEP_SUMMARY
+
+      - name: Job failed feedback
+        if: ${{ failure() }}
+        run: |
+          echo '### Publishing to Deploy Now was not successful :cross:' >> $GITHUB_STEP_SUMMARY
+          echo "Unfortunately, the deployment failed." >> $GITHUB_STEP_SUMMARY
 
       - name: Slack Notification on TEST SUCCESS
         if: success()
