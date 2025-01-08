@@ -39,20 +39,12 @@ jobs:
         run: pnpm run build
 
       - name: Run Lighthouse Tests
-
+        id: lighthouse
         run: |
           pnpm install -g @lhci/cli
           pnpm test:web:mobile
         env:
           LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
-      - name: Audit URLs using Lighthouse
-        uses: treosh/lighthouse-ci-action@v12
-        id: lighthouse
-        with:
-          urls: |
-            https://nextjs.org/
-          temporaryPublicStorage: true
-
       - name: Slack Notification on TEST SUCCESS
         if: success()
         uses: tokorom/action-slack-incoming-webhook@main
@@ -72,10 +64,7 @@ jobs:
                     "title": "GitHub Actions URL",
                     "value": "${{ github.event.repository.url }}/actions/runs/${{ github.run_id }}"
                   },
-                  {
-                    "title": "Lighthouse Report URL",
-                    "value": " ${{ fromJson(steps.lighthouse.outputs.manifest)[0].htmlPath}}"
-                  }
+               
                 ]
               }
             ]
@@ -97,10 +86,6 @@ jobs:
                   {
                     "title": "GitHub Actions URL",
                     "value": "${{ github.event.repository.url }}/actions/runs/${{ github.run_id }}"
-                  },
-                  {
-                    "title": "Lighthouse Report URL",
-                    "value": " ${{ fromJson(steps.lighthouse.outputs.manifest)[0].htmlPath}}"
                   }
                 ]
               }
