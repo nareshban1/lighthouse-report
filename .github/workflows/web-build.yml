@@ -131,6 +131,9 @@ jobs:
                 ]
               }
             ]
+          run: |
+            echo "Lighthouse Test Passed"
+            echo "Performance: ${{ fromJSON(steps.lighthouse.outputs.manifest)[0].summary.performance }}" >> $GITHUB_STEP_SUMMARY
 
       - name: Slack Notification on TEST FAILURE
         if: failure()
@@ -160,9 +163,3 @@ jobs:
           run: |
             echo "Lighthouse Test Failed"
             echo "Performance: ${{ fromJSON(steps.lighthouse.outputs.manifest)[0].summary.performance }}" >> $GITHUB_STEP_SUMMARY
-
-      - name: Upload Lighthouse Reports
-        uses: actions/upload-artifact@v3
-        with:
-          name: lhci-report
-          path: "./.lighthouseci"
