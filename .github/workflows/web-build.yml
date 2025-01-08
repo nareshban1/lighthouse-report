@@ -44,9 +44,23 @@ jobs:
       - name: Run Lighthouse Tests
         run: |
           pnpm install -g @lhci/cli
-          pnpm test:web
+          pnpm test:web --result-path=lhci-report.json
         env:
           LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
+
+      - name: Capture Lighthouse Results
+        id: lhci_results
+        run: |
+          # Read the Lighthouse report file and extract the score data (adjust depending on the output structure)
+          PERFORMANCE_SCORE=$(jq '.categories.performance.score' lhci-report.json)
+          ACCESSIBILITY_SCORE=$(jq '.categories.accessibility.score' lhci-report.json)
+          BEST_PRACTICES_SCORE=$(jq '.categories.best-practices.score' lhci-report.json)
+          SEO_SCORE=$(jq '.categories.seo.score' lhci-report.json)
+
+          echo "performance_score=$PERFORMANCE_SCORE" >> $GITHUB_ENV
+          echo "accessibility_score=$ACCESSIBILITY_SCORE" >> $GITHUB_ENV
+          echo "best_practices_score=$BEST_PRACTICES_SCORE" >> $GITHUB_ENV
+          echo "seo_score=$SEO_SCORE" >> $GITHUB_ENV
 
       - name: Slack Notification on TEST SUCCESS
         if: success()
@@ -76,7 +90,7 @@ jobs:
             ]
           run: |
             echo "Lighthouse Test Passed"
-            echo "Performance: ${{ fromJSON(steps.lighthouse.outputs) }}" >> $GITHUB_STEP_SUMMARY
+            echo "Performance: Good " >> $GITHUB_STEP_SUMMARY
 
       - name: Slack Notification on TEST FAILURE
         if: failure()
