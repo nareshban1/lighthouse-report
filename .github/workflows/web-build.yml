@@ -66,3 +66,5 @@ jobs:
           pnpm test:lighthouse:mobile
         env:
           LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
+          LHCI_TOKEN: ${{ secrets.LHCI_TOKEN }}
+          LHCI_SERVER_BASE_URL: ${{ secrets.LHCI_SERVER_BASE_URL }}
