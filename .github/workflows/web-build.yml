@@ -44,7 +44,7 @@ jobs:
       - name: Run Lighthouse Tests
         run: |
           pnpm install -g @lhci/cli
-          pnpm test:web:mobile -- --result-path=lhci-report.json
+          pnpm test:web:mobile -- --result-path=./lhci-report.json
         env:
           LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
 
