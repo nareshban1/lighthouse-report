@@ -110,7 +110,8 @@ jobs:
         if: success()
         uses: tokorom/action-slack-incoming-webhook@main
         env:
-          INCOMING_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          INCOMING_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }},
+
         with:
           text: Lighthouse Test was successful :tada:.
           attachments: |
@@ -133,7 +134,7 @@ jobs:
             ]
           run: |
             echo "Lighthouse Test Passed"
-            echo "Performance: ${{ fromJSON(steps.lighthouse.outputs.manifest)[0].summary.performance }}" >> $GITHUB_STEP_SUMMARY
+            echo "Performance: ${{ fromJSON(steps.lighthouse.outputs) }}" >> $GITHUB_STEP_SUMMARY
 
       - name: Slack Notification on TEST FAILURE
         if: failure()
