@@ -41,34 +41,6 @@ jobs:
       - name: Build Web Project
         run: pnpm run build
 
-        if: failure()
-        uses: tokorom/action-slack-incoming-webhook@main
-        env:
-          INCOMING_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-        with:
-          text: Build Failed  :crying_cat_face:.
-          attachments: |
-            [
-              {
-                "color": "danger",
-                "author_name": "${{ github.actor }}",
-                "author_icon": "${{ github.event.sender.avatar_url }}",
-                "fields": [
-                  {
-                    "title": "Commit Message",
-                    "value": "${{ github.event.head_commit.message }}"
-                  },
-                  {
-                    "title": "GitHub Actions URL",
-                    "value": "${{ github.event.repository.url }}/actions/runs/${{ github.run_id }}"
-                  },
-                  {
-                    "title": "Compare URL",
-                    "value": "${{ github.event.compare }}"
-                  }
-                ]
-              }
-            ]
       - name: Run Lighthouse Tests
         run: |
           pnpm install -g @lhci/cli
