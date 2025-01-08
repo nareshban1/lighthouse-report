@@ -1,5 +1,3 @@
-const { assert } = require("console");
-
 module.exports = {
   ci: {
     collect: {
