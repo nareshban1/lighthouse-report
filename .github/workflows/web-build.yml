@@ -17,17 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       env_name: ${{ steps.get_env.outputs.environment }}
-    steps:
-      - id: get_env
-        run: |
-          if grep -q "refs/tags/v" <<< ${{github.ref}}  ||  grep -q "refs/heads/main" <<< ${{github.ref}}; then
-            echo "environment=staging" >> $GITHUB_OUTPUT
-          else
-            echo "environment=staging" >> $GITHUB_OUTPUT
-          fi
-      - id: print_env
-        name: Print environment
-        run: echo  "Environment :- ${{ steps.get_env.outputs.environment }}"
+      environment: staging
 
   build-deploy-test:
     runs-on: ubuntu-latest
@@ -51,9 +41,9 @@ jobs:
       - name: Create .env file
         run: |
           echo "creating .env file"
-          echo "LHCI_GITHUB_APP_TOKEN=${{ secrets.LHCI_GITHUB_APP_TOKEN }}
-          NEXT_PUBLIC_LHCI_TOKEN=${{ secrets.LHCI_TOKEN }}
+          echo "NEXT_PUBLIC_LHCI_TOKEN=${{ secrets.LHCI_TOKEN }}
           NEXT_PUBLIC_LHCI_SERVER_BASE_URL=${{ secrets.LHCI_SERVER_BASE_URL }}"> .env
+
       - name: Build Web Project
         run: pnpm run build
 
@@ -63,50 +53,6 @@ jobs:
           pnpm install -g @lhci/cli
           pnpm test:web:mobile
         env:
-          LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }},
-
-      - name: Slack Notification on TEST SUCCESS
-        if: success()
-        uses: tokorom/action-slack-incoming-webhook@main
-        env:
-          INCOMING_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }},
-
-        with:
-          text: Lighthouse Test was successful :tada:.
-          attachments: |
-            [
-              {
-                "color": "good",
-                "author_name": "${{ github.actor }}",
-                "author_icon": "${{ github.event.sender.avatar_url }}",
-                "fields": [
-                  {
-                    "title": "GitHub Actions URL",
-                    "value": "${{ github.event.repository.url }}/actions/runs/${{ github.run_id }}"
-                  },
-               
-                ]
-              }
-            ]
-
-      - name: Slack Notification on TEST FAILURE
-        if: failure()
-        uses: tokorom/action-slack-incoming-webhook@main
-        env:
-          INCOMING_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-        with:
-          text: Lighthouse Test Failed  :crying_cat_face:.
-          attachments: |
-            [
-              {
-                "color": "danger",
-                "author_name": "${{ github.actor }}",
-                "author_icon": "${{ github.event.sender.avatar_url }}",
-                "fields": [
-                  {
-                    "title": "GitHub Actions URL",
-                    "value": "${{ github.event.repository.url }}/actions/runs/${{ github.run_id }}"
-                  }
-                ]
-              }
-            ]
+          LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
+          NEXT_PUBLIC_LHCI_TOKEN: ${{ secrets.LHCI_TOKEN }}
+          NEXT_PUBLIC_LHCI_SERVER_BASE_URL: ${{ secrets.LHCI_SERVER_BASE_URL }}
