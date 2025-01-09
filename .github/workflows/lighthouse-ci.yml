@@ -1,4 +1,4 @@
-name: Built Lighthouse Test
+name: Build and Lighthouse Test
 
 on:
   push:
@@ -17,6 +17,7 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v3
         with:
+          # If you want to build on pull_request from a fork, use this or remove ref:
           ref: ${{ github.event.pull_request.head.sha }}
 
       - uses: pnpm/action-setup@v4
@@ -35,13 +36,48 @@ jobs:
       - name: Build Web Project
         run: pnpm build:web
 
+      # Upload build artifacts so other jobs can use them
+      - name: Upload build output
+        uses: actions/upload-artifact@v3
+        with:
+          name: web-build
+          path: |
+            apps/web/.next
+            apps/web/public
+            # Add any other directories/files you need for Lighthouse tests
+
   Lighthouse-mobile:
-    runs-on: ubuntu-latest
+    # This job depends on `build` and can only run after build finishes successfully
     needs: build
+    runs-on: ubuntu-latest
     steps:
+      - name: Checkout Code (Optional)
+        uses: actions/checkout@v3
+        # You might or might not need checkout again, depending on your commands
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: web-build
+          path: apps/web
+
+      - uses: pnpm/action-setup@v4
+
+      - name: Use Node.js 18.x
+        uses: actions/setup-node@v3
+        with:
+          node-version: "18"
+
+      - name: Install PNPM
+        run: npm install -g pnpm
+
+      # Now run Lighthouse tests on the downloaded build
       - name: Lighthouse on Pull Request
         run: |
           cd apps/web
+          # If you have a local environment or "next start" script, run it here:
+          # pnpm start &
+          # Or just run the LHCI tests directly:
           pnpm install -g @lhci/cli
           pnpm test:lighthouse:mobile -- --upload.target=temporary-public-storage
         env:
