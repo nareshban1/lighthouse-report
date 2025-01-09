@@ -40,8 +40,8 @@ jobs:
         run: |
           cd apps/web
           pnpm install -g @lhci/cli
-          lhci collect --upload.target=temporary-public-storage --settings.preset=desktop
-          lhci upload --target=temporary-public-storage --githubStatusContextSuffix="/desktop"
+          lhci autorun --settings.preset=desktop --upload.target=temporary-public-storage --githubStatusContextSuffix="/desktop"
+          lhci upload --target=temporary-public-storage
 
         env:
           LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
