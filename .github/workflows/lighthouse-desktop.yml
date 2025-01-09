@@ -57,6 +57,7 @@ jobs:
             // Healthcheck
             await exec.exec('lhci', ['healthcheck', '--fatal']);
             // Desktop
+            let assertionFailed = false;
             for await (const url of lighthouseConfig.ci.collect.url) {
                 await exec.exec('lhci', ['collect', '--additive', '--url', url, '--settings.preset', 'desktop']);
                 
@@ -65,10 +66,16 @@ jobs:
             await exec.exec('lhci', ['assert']);
             } catch (error) {
             console.log('Lighthouse assertion failed, continuing...');
+            assertionFailed = true; 
             }
             await exec.exec('lhci', ['upload','--target', 'temporary-public-storage', '--githubStatusContextSuffix', '/desktop']);
             // Cleanup
             await exec.exec('rm', ['-fr', '.lighthouseci']);
+                  // Fail at the end if assertion failed
+            if (assertionFailed) {
+              console.log('Lighthouse CI assertions failed, marking the job as failed.');
+              core.setFailed('Lighthouse CI assertions failed.');
+            }
 
       - name: Slack Notification on SUCCESS
         if: success()
