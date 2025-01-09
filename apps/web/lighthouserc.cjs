@@ -17,6 +17,7 @@ module.exports = {
     },
     upload: {
       target: "lhci",
+      ignoreDuplicateBuildFailure: true,
       serverBaseUrl: process.env.LHCI_SERVER_BASE_URL,
       token: process.env.LHCI_TOKEN,
     },
