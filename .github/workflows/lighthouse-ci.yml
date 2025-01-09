@@ -43,7 +43,6 @@ jobs:
           path: |
             apps/web/.next
             apps/web/public
-            # Add any other directories/files you need for Lighthouse tests
 
   Lighthouse-mobile:
     needs: build
@@ -57,8 +56,9 @@ jobs:
         with:
           name: web-build
           path: apps/web
-      - name: Download build artifacts
-        run: ls -la apps/web/
+
+      - name: List artifacts
+        run: ls -R apps/web
 
       - uses: pnpm/action-setup@v4
 
