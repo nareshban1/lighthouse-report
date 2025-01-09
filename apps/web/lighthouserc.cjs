@@ -12,7 +12,7 @@ module.exports = {
     assert: {
       // preset: "lighthouse:no-pwa",
       assertions: {
-        "categories:performance": ["warn", { minScore: 0.9 }],
+        "categories:performance": ["error", { minScore: 1 }],
         "categories:accessibility": ["warn", { minScore: 0.9 }],
         "categories:best-practices": ["warn", { minScore: 0.9 }],
         "categories:seo": ["warn", { minScore: 0.9 }],
