@@ -1,4 +1,4 @@
-name: Build Web App
+name: Lighthouse Desktop
 
 on:
   push:
@@ -13,7 +13,7 @@ on:
     types: [opened, synchronize]
 
 jobs:
-  build-deploy-test:
+  build-lighthouse-desktop:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -49,23 +49,12 @@ jobs:
           LHCI_TOKEN: ${{ secrets.LHCI_TOKEN }}
           LHCI_SERVER_BASE_URL: ${{ secrets.LHCI_SERVER_BASE_URL }}
 
-      - name: Lighthouse on Pull Request
-        if: github.event_name == 'pull_request'
-        run: |
-          cd apps/web
-          pnpm install -g @lhci/cli
-          pnpm test:lighthouse:desktop -- --upload.target=temporary-public-storage
-        env:
-          LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
-          LHCI_TOKEN: ${{ secrets.LHCI_TOKEN }}
-          LHCI_SERVER_BASE_URL: ${{ secrets.LHCI_SERVER_BASE_URL }}
-
       - name: Lighthouse on Merge/Deploy
         if: github.event_name == 'push'
         run: |
           cd apps/web
           pnpm install -g @lhci/cli
-          pnpm test:lighthouse:mobile -- --upload.target=lhci
+          pnpm test:lighthouse:mobile
         env:
           LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
           LHCI_TOKEN: ${{ secrets.LHCI_TOKEN }}
