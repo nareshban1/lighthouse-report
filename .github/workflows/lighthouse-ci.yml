@@ -55,7 +55,7 @@ jobs:
             process.chdir('apps/web');
             // Run 'ls' to confirm the new working directory’s contents
             await exec.exec('ls');
-            const lighthouseConfig = require('./lighthouserc');
+            const lighthouseConfig = require('./lighthouserc.cjs');
 
             // Healthcheck
             await exec.exec('lhci', ['healthcheck', '--fatal']);
