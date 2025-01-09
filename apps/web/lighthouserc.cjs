@@ -1,7 +1,11 @@
 module.exports = {
   ci: {
     collect: {
-      url: ["http://localhost:3000"],
+      url: [
+        "http://localhost:3000",
+        "http://localhost:3000/about",
+        "http://localhost:3000/home",
+      ],
       startServerCommand: "pnpm start",
       numberOfRuns: 1,
     },
@@ -16,7 +20,7 @@ module.exports = {
       },
     },
     upload: {
-      target: "lhci",
+      target: "temporary-public-storage",
       ignoreDuplicateBuildFailure: true,
       serverBaseUrl: process.env.LHCI_SERVER_BASE_URL,
       token: process.env.LHCI_TOKEN,
