@@ -10,14 +10,14 @@ module.exports = {
       numberOfRuns: 1,
     },
     assert: {
-      // preset: "lighthouse:no-pwa",
-      assertions: {
-        "categories:performance": ["error", { minScore: 1 }],
-        "categories:accessibility": ["warn", { minScore: 0.9 }],
-        "categories:best-practices": ["warn", { minScore: 0.9 }],
-        "categories:seo": ["warn", { minScore: 0.9 }],
-        "categories:pwa": ["off"],
-      },
+      preset: "lighthouse:recommended",
+      // assertions: {
+      //   "categories:performance": ["error", { minScore: 1 }],
+      //   "categories:accessibility": ["warn", { minScore: 1 }],
+      //   "categories:best-practices": ["warn", { minScore: 1 }],
+      //   "categories:seo": ["warn", { minScore: 1 }],
+      //   "categories:pwa": ["off"],
+      // },
     },
     upload: {
       target: "temporary-public-storage",
