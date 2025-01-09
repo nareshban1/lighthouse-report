@@ -35,17 +35,31 @@ jobs:
       - name: Build Web Project
         run: pnpm build:web
 
-      - name: Lighthouse on Pull Request
+      - name: Install Lighthouse
         if: github.event_name == 'pull_request'
         run: |
           cd apps/web
           pnpm install -g @lhci/cli
-          lhci autorun --settings.preset=desktop && lhci upload --target=temporary-public-storage --githubStatusContextSuffix="/desktop"
+
+      - name: Lighthouse on Pull Request
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v6
 
         env:
           LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
           LHCI_TOKEN: ${{ secrets.LHCI_TOKEN }}
           LHCI_SERVER_BASE_URL: ${{ secrets.LHCI_SERVER_BASE_URL }}
+        with:
+          script: |
+            process.chdir('apps/web');
+            await exec.exec('ls');
+            const lighthouseConfig = require('./lighthouserc.cjs');
+            await exec.exec('lhci', ['healthcheck', '--fatal']);
+            for await (const url of lighthouseConfig.ci.collect.url) {
+                await exec.exec('lhci', ['collect', '--additive', '--url', url, '--settings.preset', 'desktop']);
+            };
+            await exec.exec('lhci', ['assert']);
+            await exec.exec('lhci', ['upload','--target', 'temporary-public-storage', '--githubStatusContextSuffix', '/desktop']);
 
       - name: Lighthouse on Merge/Deploy
         if: github.event_name == 'push'
