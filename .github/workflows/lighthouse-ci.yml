@@ -1,4 +1,4 @@
-name: Build Web App
+name: Mobile and Desktop Lighthouse CI
 
 on:
   push:
@@ -52,7 +52,7 @@ jobs:
           LHCI_SERVER_BASE_URL: ${{ secrets.LHCI_SERVER_BASE_URL }}
         with:
           script: |
-            process.chdir('apps/web');
+            process.chdir('/apps/web');
 
             const lighthouseConfig = require('./lighthouserc');
 
