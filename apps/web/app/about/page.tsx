@@ -1,10 +1,11 @@
-"use client";
 import React from "react";
 
-function About() {
+async function About() {
+  await new Promise((resolve) => setTimeout(resolve, 5000));
+
   return (
     <div>
-      <div onClick={() => console.log("clicked")}>About</div>
+      <div>About</div>
     </div>
   );
 }
