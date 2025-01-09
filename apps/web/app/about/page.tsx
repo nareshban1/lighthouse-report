@@ -1,7 +1,11 @@
 import React from "react";
 
 function About() {
-  return <div>About</div>;
+  return (
+    <div>
+      <div onClick={() => console.log("clicked")}>About</div>
+    </div>
+  );
 }
 
 export default About;
