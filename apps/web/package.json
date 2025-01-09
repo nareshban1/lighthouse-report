@@ -10,7 +10,7 @@
     "lint": "next lint --max-warnings 0",
     "check-types": "tsc --noEmit",
     "test:lighthouse:mobile": "lhci autorun ",
-    "test:lighthouse:desktop": "lhci autorun --collect.settings.preset=desktop"
+    "test:lighthouse:desktop": "lhci collect --settings.preset=desktop && lhci upload"
   },
   "dependencies": {
     "@repo/ui": "workspace:*",
