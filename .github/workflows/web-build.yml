@@ -13,22 +13,6 @@ on:
     types: [opened, synchronize]
 
 jobs:
-  setup_environment:
-    runs-on: ubuntu-latest
-    outputs:
-      env_name: ${{ steps.get_env.outputs.environment }}
-    steps:
-      - id: get_env
-        run: |
-          if grep -q "refs/tags/v" <<< ${{github.ref}}  ||  grep -q "refs/heads/main" <<< ${{github.ref}}; then
-            echo "environment=staging" >> $GITHUB_OUTPUT
-          else
-            echo "environment=staging" >> $GITHUB_OUTPUT
-          fi
-      - id: print_env
-        name: Print environment
-        run: echo  "Environment :- ${{ steps.get_env.outputs.environment }}"
-
   build-deploy-test:
     runs-on: ubuntu-latest
     steps:
@@ -48,13 +32,6 @@ jobs:
       - name: Installing Dependencies
         run: pnpm install
 
-      - name: Create .env file
-        run: |
-          echo "creating .env file"
-          echo "LHCI_GITHUB_APP_TOKEN=${{ secrets.LHCI_GITHUB_APP_TOKEN }}
-          LHCI_TOKEN=${{ secrets.LHCI_TOKEN }}
-          LHCI_SERVER_BASE_URL=${{ secrets.LHCI_SERVER_BASE_URL }}"> .env
-
       - name: Build Web Project
         run: pnpm run build
 
@@ -63,7 +40,8 @@ jobs:
         run: |
           cd apps/web
           pnpm install -g @lhci/cli
-          pnpm test:lighthouse:mobile -- --upload.target=temporary-public-storage
+          lhci autorun --upload.target=temporary-public-storage
+          pnpm test:lighthouse:desktop -- --upload.target=temporary-public-storage
         env:
           LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
           LHCI_TOKEN: ${{ secrets.LHCI_TOKEN }}
@@ -75,6 +53,7 @@ jobs:
           cd apps/web
           pnpm install -g @lhci/cli
           pnpm test:lighthouse:mobile -- --upload.target=lhci
+          pnpm test:lighthouse:desktop -- --upload.target=lhci
         env:
           LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
           LHCI_TOKEN: ${{ secrets.LHCI_TOKEN }}

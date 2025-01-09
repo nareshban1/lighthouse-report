@@ -9,8 +9,8 @@
     "start": "next start",
     "lint": "next lint --max-warnings 0",
     "check-types": "tsc --noEmit",
-    "test:lighthouse:mobile": "lhci autorun --verbose",
-    "test:lighthouse:desktop": "lhci autorun --verbose --collect.settings.preset=desktop"
+    "test:lighthouse:mobile": "lhci autorun ",
+    "test:lighthouse:desktop": "lhci autorun --collect.settings.preset=desktop"
   },
   "dependencies": {
     "@repo/ui": "workspace:*",
