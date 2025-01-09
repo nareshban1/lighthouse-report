@@ -60,15 +60,16 @@ jobs:
             let assertionFailed = false;
             for await (const url of lighthouseConfig.ci.collect.url) {
                 await exec.exec('lhci', ['collect', '--additive', '--url', url, '--settings.preset', 'desktop','--numberOfRuns',lighthouseConfig.ci.collect.numberOfRuns]);
-                try {
+
+                };
+            try {
                   await exec.exec('lhci', ['assert']);
-                } catch (error) {
+            } catch (error) {
                   console.log('Lighthouse assertion failed, continuing...');
                   assertionFailed = true; 
-                }
-                const {stdout,stderr} = await exec.getExecOutput('lhci', ['upload','--target', 'temporary-public-storage', '--githubStatusContextSuffix', '/desktop']);
-                console.log('Command output (stdout):', stdout,stderr);
-                };
+            }
+            const {stdout,stderr} = await exec.getExecOutput('lhci', ['upload','--target', 'temporary-public-storage', '--githubStatusContextSuffix', '/desktop']);
+            console.log('Command output testing  (stdout):', stdout,stderr);
             await exec.exec('rm', ['-fr', '.lighthouseci']);
 
             // Fail at the end if assertion failed
