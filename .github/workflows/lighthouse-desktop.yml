@@ -4,11 +4,9 @@ on:
   push:
     branches:
       - main
-      - develop
   workflow_dispatch:
   pull_request:
     branches:
-      - develop
       - main
     types: [opened, synchronize]
 
@@ -35,7 +33,7 @@ jobs:
         run: pnpm install
 
       - name: Build Web Project
-        run: pnpm run build
+        run: pnpm build:web
 
       - name: Lighthouse on Pull Request
         if: github.event_name == 'pull_request'
