@@ -45,12 +45,18 @@ jobs:
       - name: Lighthouse on Pull Request
         if: github.event_name == 'pull_request'
         uses: actions/github-script@v6
+
         env:
           LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
           LHCI_TOKEN: ${{ secrets.LHCI_TOKEN }}
           LHCI_SERVER_BASE_URL: ${{ secrets.LHCI_SERVER_BASE_URL }}
         with:
           script: |
+            const exec = require('@actions/exec');
+
+            // Switch to apps/web directory
+            process.chdir('apps/web');
+
             const lighthouseConfig = require('./lighthouserc');
 
             // Healthcheck
@@ -58,7 +64,7 @@ jobs:
 
             // Desktop
             for await (const url of lighthouseConfig.ci.collect.url) {
-                await exec.exec('lhci', ['collect', '--additive', '--url', url, '--psiStrategy', 'desktop', '--settings.preset', 'desktop']);
+                await exec.exec('lhci', ['collect', '--additive', '--url', url, '--psiStrategy', 'desktop', '--settings.preset', 'desktop','--upload.target', 'temporary-public-storage']);
             };
 
             await exec.exec('lhci', ['assert']);
@@ -69,7 +75,7 @@ jobs:
 
             // Mobile
             for await (const url of lighthouseConfig.ci.collect.url) {
-                await exec.exec('lhci', ['collect', '--additive', '--url', url, '--psiStrategy', 'mobile']);
+                await exec.exec('lhci', ['collect', '--additive', '--url', url, '--psiStrategy', 'mobile','--upload.target', 'temporary-public-storage']);
             };
 
             await exec.exec('lhci', ['assert']);
