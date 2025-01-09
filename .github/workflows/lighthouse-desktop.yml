@@ -62,7 +62,6 @@ jobs:
             for await (const url of lighthouseConfig.ci.collect.url) {
                 await exec.exec('lhci', ['collect', '--additive', '--url', url, '--settings.preset', 'desktop']);
             };
-
             await exec.exec('lhci', ['upload','--target', 'temporary-public-storage', '--githubStatusContextSuffix', '/desktop']);
             // Cleanup
             await exec.exec('rm', ['-fr', '.lighthouseci']);
