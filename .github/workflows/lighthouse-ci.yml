@@ -100,6 +100,7 @@ jobs:
                 ]
               }
             ]
+
       - name: Slack Notification on FAILURE
         if: failure()
         uses: tokorom/action-slack-incoming-webhook@main
@@ -131,6 +132,7 @@ jobs:
             ]
 
   lighthouse-desktop:
+    needs: build
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -166,6 +168,7 @@ jobs:
           LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
           LHCI_TOKEN: ${{ secrets.LHCI_TOKEN }}
           LHCI_SERVER_BASE_URL: ${{ secrets.LHCI_SERVER_BASE_URL }}
+
       - name: Slack Notification on SUCCESS
         if: success()
         uses: tokorom/action-slack-incoming-webhook@main
@@ -195,6 +198,7 @@ jobs:
                 ]
               }
             ]
+
       - name: Slack Notification on FAILURE
         if: failure()
         uses: tokorom/action-slack-incoming-webhook@main
