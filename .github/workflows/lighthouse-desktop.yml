@@ -1,19 +1,17 @@
-name: Lighthouse Desktop CI
+name: Lighthouse Desktop
 
 on:
   push:
     branches:
       - main
-      - develop
   workflow_dispatch:
   pull_request:
     branches:
-      - develop
       - main
     types: [opened, synchronize]
 
 jobs:
-  build-lighthouse-desktop:
+  build-lighthouse-Desktop:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -35,48 +33,30 @@ jobs:
         run: pnpm install
 
       - name: Build Web Project
-        run: pnpm run build
-
-      - name: Install Lighthouse CI
-        run: |
-          cd apps/web
-          pnpm install -g @lhci/cli
+        run: pnpm build:web
 
       - name: Lighthouse on Pull Request
         if: github.event_name == 'pull_request'
-        uses: actions/github-script@v6
+        run: |
+          cd apps/web
+          pnpm install -g @lhci/cli
+          pnpm test:lighthouse:mobile -- --upload.target=temporary-public-storage
 
         env:
           LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
           LHCI_TOKEN: ${{ secrets.LHCI_TOKEN }}
           LHCI_SERVER_BASE_URL: ${{ secrets.LHCI_SERVER_BASE_URL }}
-        with:
-          script: |
-            process.chdir('apps/web');
-            const lighthouseConfig = require('./lighthouserc.cjs');
-            // Healthcheck
-            await exec.exec('lhci', ['healthcheck', '--fatal']);
-            // Desktop
-            let assertionFailed = false;
-            for await (const url of lighthouseConfig.ci.collect.url) {
-                await exec.exec('lhci', ['collect', '--additive', '--url', url, '--settings.preset', 'desktop','--numberOfRuns',lighthouseConfig.ci.collect.numberOfRuns]);
 
-                };
-            try {
-                  await exec.exec('lhci', ['assert']);
-            } catch (error) {
-                  console.log('Lighthouse assertion failed, continuing...');
-                  assertionFailed = true; 
-            }
-            const {stdout,stderr} = await exec.getExecOutput('lhci', ['upload','--target', 'temporary-public-storage', '--githubStatusContextSuffix', '/desktop']);
-            console.log('Command output testing  (stdout):', stdout,stderr);
-            await exec.exec('rm', ['-fr', '.lighthouseci']);
-
-            // Fail at the end if assertion failed
-            if (assertionFailed) {
-              console.log('Lighthouse CI assertions failed, marking the job as failed.');
-              core.setFailed('Lighthouse CI assertions failed.');
-            }
+      - name: Lighthouse on Merge/Deploy
+        if: github.event_name == 'push'
+        run: |
+          cd apps/web
+          pnpm install -g @lhci/cli
+          pnpm test:lighthouse:desktop
+        env:
+          LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
+          LHCI_TOKEN: ${{ secrets.LHCI_TOKEN }}
+          LHCI_SERVER_BASE_URL: ${{ secrets.LHCI_SERVER_BASE_URL }}
 
       - name: Slack Notification on SUCCESS
         if: success()
@@ -84,7 +64,7 @@ jobs:
         env:
           INCOMING_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
         with:
-          text: Lighthouse Test has Passed on desktop.
+          text: Lighthouse Test has Passed on Desktop.
           attachments: |
             [
               {
@@ -114,7 +94,7 @@ jobs:
         env:
           INCOMING_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
         with:
-          text: Lighthouse Test has Failed on desktop.
+          text: Lighthouse Test has Failed on Desktop.
           attachments: |
             [
               {
