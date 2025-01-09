@@ -60,6 +60,7 @@ jobs:
             };
             await exec.exec('lhci', ['assert']);
             await exec.exec('lhci', ['upload','--target', 'temporary-public-storage', '--githubStatusContextSuffix', '/desktop']);
+            await exec.exec('rm', ['-fr', '.lighthouseci']);
 
       - name: Lighthouse on Merge/Deploy
         if: github.event_name == 'push'
