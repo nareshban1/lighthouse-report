@@ -36,7 +36,6 @@ jobs:
       - name: Build Web Project
         run: pnpm build:web
 
-      # Upload build artifacts so other jobs can use them
       - name: Upload build output
         uses: actions/upload-artifact@v3
         with:
@@ -47,13 +46,11 @@ jobs:
             # Add any other directories/files you need for Lighthouse tests
 
   Lighthouse-mobile:
-    # This job depends on `build` and can only run after build finishes successfully
     needs: build
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Code (Optional)
+      - name: Checkout Code
         uses: actions/checkout@v3
-        # You might or might not need checkout again, depending on your commands
 
       - name: Download build artifacts
         uses: actions/download-artifact@v3
@@ -71,8 +68,10 @@ jobs:
       - name: Install PNPM
         run: npm install -g pnpm
 
-      # Now run Lighthouse tests on the downloaded build
-      - name: Lighthouse on Pull Request
+      - name: Installing Dependencies
+        run: pnpm install
+
+      - name: Lighthouse Testing
         run: |
           cd apps/web
           # If you have a local environment or "next start" script, run it here:
@@ -80,6 +79,44 @@ jobs:
           # Or just run the LHCI tests directly:
           pnpm install -g @lhci/cli
           pnpm test:lighthouse:mobile -- --upload.target=temporary-public-storage
+        env:
+          LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
+          LHCI_TOKEN: ${{ secrets.LHCI_TOKEN }}
+          LHCI_SERVER_BASE_URL: ${{ secrets.LHCI_SERVER_BASE_URL }}
+
+  Lighthouse-desktop:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: web-build
+          path: apps/web
+
+      - uses: pnpm/action-setup@v4
+
+      - name: Use Node.js 18.x
+        uses: actions/setup-node@v3
+        with:
+          node-version: "18"
+
+      - name: Install PNPM
+        run: npm install -g pnpm
+
+      - name: Installing Dependencies
+        run: pnpm install
+
+      - name: Lighthouse Testing
+        run: |
+          cd apps/web
+          pnpm install -g @lhci/cli
+          lhci collect --upload.target=temporary-public-storage --settings.preset=desktop
+          lhci upload --target=temporary-public-storage --githubStatusContextSuffix="/desktop"
+
         env:
           LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
           LHCI_TOKEN: ${{ secrets.LHCI_TOKEN }}
