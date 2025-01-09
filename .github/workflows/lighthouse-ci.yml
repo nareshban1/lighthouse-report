@@ -52,9 +52,6 @@ jobs:
           LHCI_SERVER_BASE_URL: ${{ secrets.LHCI_SERVER_BASE_URL }}
         with:
           script: |
-            const exec = require('@actions/exec');
-
-            // Switch to apps/web directory
             process.chdir('apps/web');
 
             const lighthouseConfig = require('./lighthouserc');
