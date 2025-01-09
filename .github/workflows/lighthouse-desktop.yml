@@ -40,7 +40,7 @@ jobs:
         run: |
           cd apps/web
           pnpm install -g @lhci/cli
-          lhci collect --upload.target=temporary-public-storage
+          lhci collect --upload.target=temporary-public-storage --settings.preset=desktop
           lhci upload --target=temporary-public-storage --githubStatusContextSuffix="/desktop"
 
         env:
@@ -53,7 +53,7 @@ jobs:
         run: |
           cd apps/web
           pnpm install -g @lhci/cli
-          pnpm test:lighthouse:mobile
+          pnpm test:lighthouse:desktop
         env:
           LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
           LHCI_TOKEN: ${{ secrets.LHCI_TOKEN }}
