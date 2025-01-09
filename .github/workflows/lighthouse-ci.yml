@@ -66,7 +66,7 @@ jobs:
             };
 
             await exec.exec('lhci', ['assert']);
-            await exec.exec('lhci', ['upload','--upload.target', 'temporary-public-storage', '--githubStatusContextSuffix', '/desktop']);
+            await exec.exec('lhci', ['upload','--target', 'temporary-public-storage', '--githubStatusContextSuffix', '/desktop']);
 
             // Cleanup
             await exec.exec('rm', ['-fr', '.lighthouseci']);
@@ -77,7 +77,7 @@ jobs:
             };
 
             await exec.exec('lhci', ['assert']);
-            await exec.exec('lhci', ['upload', '--upload.target', 'temporary-public-storage', '--githubStatusContextSuffix', '/mobile']);
+            await exec.exec('lhci', ['upload', '--target', 'temporary-public-storage', '--githubStatusContextSuffix', '/mobile']);
 
       - name: Lighthouse on Merge/Deploy
         if: github.event_name == 'push'
