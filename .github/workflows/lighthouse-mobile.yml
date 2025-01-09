@@ -82,7 +82,7 @@ jobs:
                   },
                   {
                     "title": "Lighthouse Results URL",
-                    "value": 
+                    "value": ""
                   }
                 ]
               }
@@ -112,7 +112,7 @@ jobs:
                   },
                   {
                     "title": "Lighthouse Results URL",
-                    "value": 
+                    "value": ""
                   }
                 ]
               }
