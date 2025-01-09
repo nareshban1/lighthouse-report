@@ -40,19 +40,8 @@ jobs:
         run: |
           cd apps/web
           pnpm install -g @lhci/cli
-          pnpm test:lighthouse:mobile -- --upload.target=temporary-public-storage
+          pnpm test:lighthouse:desktop -- --upload.target=temporary-public-storage
 
-        env:
-          LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
-          LHCI_TOKEN: ${{ secrets.LHCI_TOKEN }}
-          LHCI_SERVER_BASE_URL: ${{ secrets.LHCI_SERVER_BASE_URL }}
-
-      - name: Lighthouse on Merge/Deploy
-        if: github.event_name == 'push'
-        run: |
-          cd apps/web
-          pnpm install -g @lhci/cli
-          pnpm test:lighthouse:desktop
         env:
           LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
           LHCI_TOKEN: ${{ secrets.LHCI_TOKEN }}
