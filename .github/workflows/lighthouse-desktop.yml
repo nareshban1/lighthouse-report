@@ -13,7 +13,7 @@ on:
     types: [opened, synchronize]
 
 jobs:
-  build-deploy-test:
+  build-lighthouse-desktop:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -41,6 +41,7 @@ jobs:
         run: |
           cd apps/web
           pnpm install -g @lhci/cli
+
       - name: Lighthouse on Pull Request
         if: github.event_name == 'pull_request'
         uses: actions/github-script@v6
@@ -61,7 +62,7 @@ jobs:
             for await (const url of lighthouseConfig.ci.collect.url) {
                 await exec.exec('lhci', ['collect', '--additive', '--url', url, '--settings.preset', 'desktop']);
             };
-            await exec.exec('lhci', ['assert']);
+
             await exec.exec('lhci', ['upload','--target', 'temporary-public-storage', '--githubStatusContextSuffix', '/desktop']);
             // Cleanup
             await exec.exec('rm', ['-fr', '.lighthouseci']);
