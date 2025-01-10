@@ -39,7 +39,7 @@ jobs:
         run: |
           cd apps/web
           pnpm install -g @lhci/cli
-          lhci autorun >> output.log 2>&1
+          lhci autorun 2>&1 | tee output.log
           echo "---------- Output Log ----------"
           cat output.log
           grep -oE 'https://storage\.googleapis\.com/lighthouse-infrastructure\.appspot\.com/reports/[^[:space:]]*\.report\.html' output.log > desktop_urls.txt
