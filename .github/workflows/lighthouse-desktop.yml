@@ -40,8 +40,8 @@ jobs:
         run: |
           cd apps/web
           pnpm install -g @lhci/cli
-          lhci collect --additive --config=.mobile-lighthouserc.cjs
-          lhci collect --additive --config=.desktop-lighthouserc.cjs
+          lhci collect --additive --config=mobile-lighthouserc.cjs
+          lhci collect --additive --config=desktop-lighthouserc.cjs
           lhci assert
           lchi upload
 
