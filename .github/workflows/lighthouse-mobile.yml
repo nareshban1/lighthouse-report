@@ -40,9 +40,7 @@ jobs:
         run: |
           cd apps/web
           pnpm install -g @lhci/cli
-          lhci collect --config=./mobile-lighthouserc.cjs
-          lhci assert
-          lhci upload
+          lhci autorun 
           grep -oE 'https://storage\.googleapis\.com/lighthouse-infrastructure\.appspot\.com/reports/[^[:space:]]*\.report\.html' output.log > desktop_urls.txt
             echo "desktop_url=$(cat desktop_urls.txt)" >> $GITHUB_OUTPUT
 
