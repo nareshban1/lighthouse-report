@@ -1,30 +1,33 @@
-name: Lighthouse Mobile
+name: Lighthouse Test for Mobile and Desktop View
 
 on:
   push:
     branches:
       - main
+      - develop
   workflow_dispatch:
   pull_request:
     branches:
       - main
-    types: [opened, synchronize]
+      - develop
+
+concurrency:
+  group: lighthouse-tests
+  cancel-in-progress: false
 
 jobs:
   build-lighthouse-mobile:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v3
-        with:
-          ref: ${{ github.event.pull_request.head.sha }}
-
+        uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
 
-      - name: Use Node.js 18.x
-        uses: actions/setup-node@v3
+      - name: Use Node.js 21.x
+        uses: actions/setup-node@v4
         with:
-          node-version: "18"
+          node-version: "21"
+          cache: "pnpm"
 
       - name: Install PNPM
         run: npm install -g pnpm
@@ -35,29 +38,41 @@ jobs:
       - name: Build Web Project
         run: pnpm build:web
 
-      - name: Lighthouse Tests
+      - name: Lighthouse Tests for Mobile View
         id: lighthouse-mobile-tests
         run: |
           cd apps/web
           pnpm install -g @lhci/cli
           lhci autorun >> mobile_output.log 2>&1
-          cat mobile_output.log
-          grep -oE 'https://storage\.googleapis\.com/lighthouse-infrastructure\.appspot\.com/reports/[^[:space:]]*\.report\.html' mobile_output.log > mobile_urls.txt
-          echo "mobile_url=$(cat mobile_urls.txt)" >> $GITHUB_OUTPUT
-        env:
-          LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
+          MOBILE_URLS="$(grep -oE 'https://storage\.googleapis\.com/lighthouse-infrastructure\.appspot\.com/reports/[^[:space:]]*\.report\.html' mobile_output.log)"
+          {
+            echo "mobile_urls<<EOF"
+            echo "$MOBILE_URLS"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
 
-      - name: Slack Notification on SUCCESS
-        if: success()
+      - name: Lighthouse Tests for Desktop View
+        id: lighthouse-desktop-tests
+        run: |
+          cd apps/web
+          pnpm install -g @lhci/cli
+          lhci autorun --collect.settings.preset=desktop >> desktop_output.log 2>&1
+          DESKTOP_URLS="$(grep -oE 'https://storage\.googleapis\.com/lighthouse-infrastructure\.appspot\.com/reports/[^[:space:]]*\.report\.html' desktop_output.log)"
+          {
+              echo "desktop_urls<<EOF"
+              echo "$DESKTOP_URLS"
+              echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Send Slack Alert for Desktop Tests
         uses: tokorom/action-slack-incoming-webhook@main
         env:
           INCOMING_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
         with:
-          text: Lighthouse Test has Passed on Mobile.
+          text: Lighthouse Test Results on Desktop.
           attachments: |
             [
               {
-                "color": "good",
                 "author_name": "${{ github.actor }}",
                 "author_icon": "${{ github.event.sender.avatar_url }}",
                 "fields": [
@@ -70,24 +85,22 @@ jobs:
                     "value": "${{ github.event.repository.url }}/actions/runs/${{ github.run_id }}"
                   },
                   {
-                    "title": "Desktop Lighthouse Report",
-                    "value": "${{ steps.lighthouse-mobile-tests.outputs.mobile_url }}"
+                    "title": "Lighthouse Results URL",
+                    "value": ${{ steps.lighthouse-desktop-tests.outputs.desktop_urls }}
                   }
                 ]
               }
             ]
 
-      - name: Slack Notification on FAILURE
-        if: failure()
+      - name: Send Slack Alert for Mobile Tests
         uses: tokorom/action-slack-incoming-webhook@main
         env:
           INCOMING_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
         with:
-          text: Lighthouse Test has Failed on Mobile.
+          text: Lighthouse Test Results on Mobile.
           attachments: |
             [
               {
-                "color": "danger",
                 "author_name": "${{ github.actor }}",
                 "author_icon": "${{ github.event.sender.avatar_url }}",
                 "fields": [
@@ -98,12 +111,11 @@ jobs:
                   {
                     "title": "GitHub Actions URL",
                     "value": "${{ github.event.repository.url }}/actions/runs/${{ github.run_id }}"
-                  }, 
+                  },
                   {
-                    "title": "Desktop Lighthouse Report",
-                    "value": "${{ steps.lighthouse-mobile-tests.outputs.mobile_url }}"
+                    "title": "Lighthouse Results URL",
+                    "value": ${{ steps.lighthouse-mobile-tests.outputs.mobile_urls }}
                   }
-
                 ]
               }
             ]
