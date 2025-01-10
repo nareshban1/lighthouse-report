@@ -40,9 +40,9 @@ jobs:
         run: |
           cd apps/web
           pnpm install -g @lhci/cli
-          lhci autorun | tee output.log
-          cat output.log
-          grep -oE 'https://storage\.googleapis\.com/lighthouse-infrastructure\.appspot\.com/reports/[^[:space:]]*\.report\.html' output.log > mobile_urls.txt
+          lhci autorun >> mobile_output.log
+          cat mobile_output.log
+          grep -oE 'https://storage\.googleapis\.com/lighthouse-infrastructure\.appspot\.com/reports/[^[:space:]]*\.report\.html' mobile_output.log > mobile_urls.txt
           echo "mobile_url=$(cat mobile_urls.txt)" >> $GITHUB_OUTPUT
         env:
           LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
@@ -113,7 +113,7 @@ jobs:
         run: |
           cd apps/web
           pnpm install -g @lhci/cli
-          lhci autorun --collect.preset=desktop | tee output.log
+          lhci autorun --collect.preset=desktop >> output.log
           grep -oE 'https://storage\.googleapis\.com/lighthouse-infrastructure\.appspot\.com/reports/[^[:space:]]*\.report\.html' output.log > desktop_urls.txt
           echo "desktop_url=$(cat desktop_urls.txt)" >> $GITHUB_OUTPUT
         env:
