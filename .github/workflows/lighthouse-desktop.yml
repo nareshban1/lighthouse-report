@@ -35,7 +35,12 @@ jobs:
       - name: Build Web Project
         run: pnpm build:web
 
-      - name: Lighthouse on Pull Request
+      - name: Install Lighthouse CI
+        run: |
+          cd apps/web
+          pnpm install -g @lhci/cli
+
+      - name: Run Lighthouse Tests
         if: github.event_name == 'pull_request'
         uses: actions/github-script@v6
         with:
