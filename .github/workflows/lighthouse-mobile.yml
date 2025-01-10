@@ -1,0 +1,121 @@
+name: Lighthouse Test for Mobile and Desktop View
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - main
+      - develop
+
+concurrency:
+  group: lighthouse-tests
+  cancel-in-progress: false
+
+jobs:
+  build-lighthouse-mobile:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+
+      - name: Use Node.js 21.x
+        uses: actions/setup-node@v4
+        with:
+          node-version: "21"
+          cache: "pnpm"
+
+      - name: Install PNPM
+        run: npm install -g pnpm
+
+      - name: Installing Dependencies
+        run: pnpm install
+
+      - name: Build Web Project
+        run: pnpm build:web
+
+      - name: Lighthouse Tests for Mobile View
+        id: lighthouse-mobile-tests
+        run: |
+          cd apps/web
+          pnpm install -g @lhci/cli
+          lhci autorun >> mobile_output.log 2>&1
+          MOBILE_URLS="$(grep -oE 'https://storage\.googleapis\.com/lighthouse-infrastructure\.appspot\.com/reports/[^[:space:]]*\.report\.html' mobile_output.log)"
+          {
+            echo "mobile_urls<<EOF"
+            echo "$MOBILE_URLS"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Lighthouse Tests for Desktop View
+        id: lighthouse-desktop-tests
+        run: |
+          cd apps/web
+          pnpm install -g @lhci/cli
+          lhci autorun --collect.settings.preset=desktop >> desktop_output.log 2>&1
+          DESKTOP_URLS="$(grep -oE 'https://storage\.googleapis\.com/lighthouse-infrastructure\.appspot\.com/reports/[^[:space:]]*\.report\.html' desktop_output.log)"
+          {
+              echo "desktop_urls<<EOF"
+              echo "$DESKTOP_URLS"
+              echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Send Slack Alert for Desktop Tests
+        uses: tokorom/action-slack-incoming-webhook@main
+        env:
+          INCOMING_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        with:
+          text: Lighthouse Test Results on Desktop.
+          attachments: |
+            [
+              {
+                "author_name": "${{ github.actor }}",
+                "author_icon": "${{ github.event.sender.avatar_url }}",
+                "fields": [
+                  {
+                    "title": "Commit Message",
+                    "value": "${{ github.event.head_commit.message }}"
+                  },
+                  {
+                    "title": "GitHub Actions URL",
+                    "value": "${{ github.event.repository.url }}/actions/runs/${{ github.run_id }}"
+                  },
+                  {
+                    "title": "Lighthouse Results URL",
+                    "value": ${{ steps.lighthouse-desktop-tests.outputs.desktop_urls }}
+                  }
+                ]
+              }
+            ]
+
+      - name: Send Slack Alert for Mobile Tests
+        uses: tokorom/action-slack-incoming-webhook@main
+        env:
+          INCOMING_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        with:
+          text: Lighthouse Test Results on Mobile.
+          attachments: |
+            [
+              {
+                "author_name": "${{ github.actor }}",
+                "author_icon": "${{ github.event.sender.avatar_url }}",
+                "fields": [
+                  {
+                    "title": "Commit Message",
+                    "value": "${{ github.event.head_commit.message }}"
+                  },
+                  {
+                    "title": "GitHub Actions URL",
+                    "value": "${{ github.event.repository.url }}/actions/runs/${{ github.run_id }}"
+                  },
+                  {
+                    "title": "Lighthouse Results URL",
+                    "value": ${{ steps.lighthouse-mobile-tests.outputs.mobile_urls }}
+                  }
+                ]
+              }
+            ]

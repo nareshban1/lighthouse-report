@@ -27,9 +27,36 @@ export default function Home() {
           srcLight="turborepo-dark.svg"
           srcDark="turborepo-light.svg"
           alt="Turborepo logo"
-          width={180}
-          height={38}
-          priority
+          width={1080}
+          height={900}
+          quality={100}
+        />
+        <ThemeImage
+          className={styles.logo}
+          srcLight="turborepo-dark.svg"
+          srcDark="turborepo-light.svg"
+          alt="Turborepo logo"
+          width={1080}
+          height={900}
+          quality={100}
+        />
+        <ThemeImage
+          className={styles.logo}
+          srcLight="turborepo-dark.svg"
+          srcDark="turborepo-light.svg"
+          alt="Turborepo logo"
+          width={1080}
+          height={900}
+          quality={100}
+        />
+        <ThemeImage
+          className={styles.logo}
+          srcLight="turborepo-dark.svg"
+          srcDark="turborepo-light.svg"
+          alt="Turborepo logo"
+          width={1080}
+          height={900}
+          quality={100}
         />
         <ol>
           <li>
