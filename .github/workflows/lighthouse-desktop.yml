@@ -51,10 +51,8 @@ jobs:
             const mobileLighthouseConfig = require('./mobile-lighthouserc.cjs');
             await exec.exec('lhci', ['healthcheck', '--fatal']);
             let assertionFailed = false;
-            for await (const url of desktopLighthouseConfig.ci.collect.url) {
-                await exec.exec('lhci', ['collect', '--additive', '--config',desktopLighthouseConfig, '--url', url]);
+            await exec.exec('lhci', ['collect', '--additive', '--config',desktopLighthouseConfig]);
 
-            };
             try {
                   await exec.exec('lhci', ['assert']);
             } catch (error) {
