@@ -37,25 +37,32 @@ jobs:
 
       - name: Lighthouse on Pull Request
         if: github.event_name == 'pull_request'
-        run: |
-          cd apps/web
-          pnpm install -g @lhci/cli
-          let assertionFailed = false;
-          lhci collect --additive --config=mobile-lighthouserc.cjs
-          lhci collect --additive --config=desktop-lighthouserc.cjs
-          try{
-            lhci assert
-          }
-          catch(e){
-              console.log('Lighthouse assertion failed, continuing...');
-              console.log(e);
-              assertionFailed = true; 
-          }
-          lchi upload
-          if (assertionFailed) {
+        uses: actions/github-script@v6
+        with:
+          script: |
+            process.chdir('apps/web');
+            const lighthouseConfig = require('./lighthouserc.cjs');
+            const desktopLighthouseConfig = require('./desktop-lighthouserc.cjs');
+            const mobileLighthouseConfig = require('./mobile-lighthouserc.cjs');
+            await exec.exec('lhci', ['healthcheck', '--fatal']);
+            let assertionFailed = false;
+            for await (const url of lighthouseConfig.ci.collect.url) {
+                await exec.exec('lhci', ['collect', '--additive', '--config',desktopLighthouseConfig, '--url', url, '--settings.preset', 'desktop','--numberOfRuns',lighthouseConfig.ci.collect.numberOfRuns]);
+
+            };
+            try {
+                  await exec.exec('lhci', ['assert']);
+            } catch (error) {
+                  console.log('Lighthouse assertion failed, continuing...');
+                  assertionFailed = true; 
+            }
+            await exec.getExecOutput('lhci', ['upload','--target', 'temporary-public-storage']);
+            await exec.exec('rm', ['-fr', '.lighthouseci']);
+
+            // Fail at the end if assertion failed
+            if (assertionFailed) {
               console.log('Lighthouse CI assertions failed, marking the job as failed.');
               core.setFailed('Lighthouse CI assertions failed.');
-          }
-
+            }
         env:
           LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
