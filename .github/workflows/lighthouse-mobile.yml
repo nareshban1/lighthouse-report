@@ -40,23 +40,14 @@ jobs:
         run: |
           cd apps/web
           pnpm install -g @lhci/cli
-          pnpm test:lighthouse:mobile -- --upload.target=temporary-public-storage
+          lhci collect --config=./mobile-lighthouserc.cjs
+          lhci assert
+          lhci upload
+          grep -oE 'https://storage\.googleapis\.com/lighthouse-infrastructure\.appspot\.com/reports/[^[:space:]]*\.report\.html' output.log > desktop_urls.txt
+            echo "desktop_url=$(cat desktop_urls.txt)" >> $GITHUB_OUTPUT
 
         env:
           LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
-          LHCI_TOKEN: ${{ secrets.LHCI_TOKEN }}
-          LHCI_SERVER_BASE_URL: ${{ secrets.LHCI_SERVER_BASE_URL }}
-
-      - name: Lighthouse on Merge/Deploy
-        if: github.event_name == 'push'
-        run: |
-          cd apps/web
-          pnpm install -g @lhci/cli
-          pnpm test:lighthouse:mobile
-        env:
-          LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
-          LHCI_TOKEN: ${{ secrets.LHCI_TOKEN }}
-          LHCI_SERVER_BASE_URL: ${{ secrets.LHCI_SERVER_BASE_URL }}
 
       - name: Slack Notification on SUCCESS
         if: success()
@@ -82,7 +73,7 @@ jobs:
                   },
                   {
                     "title": "Lighthouse Results URL",
-                    "value": ""
+                    "value": ${{ steps.get_desktop_url.outputs.desktop_url }}
                   }
                 ]
               }
@@ -112,7 +103,7 @@ jobs:
                   },
                   {
                     "title": "Lighthouse Results URL",
-                    "value": ""
+                    "value": ${{ steps.get_desktop_url.outputs.desktop_url }}
                   }
                 ]
               }
