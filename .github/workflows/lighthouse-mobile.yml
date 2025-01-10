@@ -39,7 +39,9 @@ jobs:
         run: |
           cd apps/web
           pnpm install -g @lhci/cli
-          lhci autorun
+          lhci autorun >> output.log 2>&1
+          grep -oE 'https://storage\.googleapis\.com/lighthouse-infrastructure\.appspot\.com/reports/[^[:space:]]*\.report\.html' output.log > desktop_urls.txt
+          echo "desktop_url=$(cat desktop_urls.txt)" >> $GITHUB_OUTPUT
         env:
           LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
 
@@ -65,10 +67,7 @@ jobs:
                     "title": "GitHub Actions URL",
                     "value": "${{ github.event.repository.url }}/actions/runs/${{ github.run_id }}"
                   },
-                  {
-                    "title": "Lighthouse Results URL",
-                    "value": ${{ steps.get_mobile_url.outputs.mobile_url }}
-                  }
+
                 ]
               }
             ]
@@ -95,10 +94,7 @@ jobs:
                     "title": "GitHub Actions URL",
                     "value": "${{ github.event.repository.url }}/actions/runs/${{ github.run_id }}"
                   },
-                  {
-                    "title": "Lighthouse Results URL",
-                    "value": ${{ steps.get_mobile_url.outputs.mobile_url }}
-                  }
+
                 ]
               }
             ]
