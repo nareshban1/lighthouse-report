@@ -40,7 +40,7 @@ jobs:
         run: |
           cd apps/web
           pnpm install -g @lhci/cli
-          lhci autorun 
+          lhci autorun >> output.log 2>&1
           grep -oE 'https://storage\.googleapis\.com/lighthouse-infrastructure\.appspot\.com/reports/[^[:space:]]*\.report\.html' output.log > mobile_urls.txt
             echo "mobile_url=$(cat mobile_urls.txt)" >> $GITHUB_OUTPUT
 
