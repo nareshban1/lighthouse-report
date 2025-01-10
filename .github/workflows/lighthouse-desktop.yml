@@ -40,10 +40,22 @@ jobs:
         run: |
           cd apps/web
           pnpm install -g @lhci/cli
+          let assertionFailed = false;
           lhci collect --additive --config=mobile-lighthouserc.cjs
           lhci collect --additive --config=desktop-lighthouserc.cjs
-          lhci assert
+          try{
+            lhci assert
+          }
+          catch(e){
+              console.log('Lighthouse assertion failed, continuing...');
+              console.log(e);
+              assertionFailed = true; 
+          }
           lchi upload
+          if (assertionFailed) {
+              console.log('Lighthouse CI assertions failed, marking the job as failed.');
+              core.setFailed('Lighthouse CI assertions failed.');
+          }
 
         env:
           LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
