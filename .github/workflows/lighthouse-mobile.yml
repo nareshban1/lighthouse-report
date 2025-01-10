@@ -36,6 +36,7 @@ jobs:
         run: pnpm build:web
 
       - name: Lighthouse Tests
+        id: lighthouse-tests
         run: |
           cd apps/web
           pnpm install -g @lhci/cli
@@ -68,6 +69,10 @@ jobs:
                   {
                     "title": "GitHub Actions URL",
                     "value": "${{ github.event.repository.url }}/actions/runs/${{ github.run_id }}"
+                  },
+                  {
+                    "title": "Desktop Lighthouse Report",
+                    "value": "${{ steps.lighthouse-tests.outputs.desktop_url }}"
                   }
                 ]
               }
@@ -94,6 +99,10 @@ jobs:
                   {
                     "title": "GitHub Actions URL",
                     "value": "${{ github.event.repository.url }}/actions/runs/${{ github.run_id }}"
+                  }, 
+                  {
+                    "title": "Desktop Lighthouse Report",
+                    "value": "${{ steps.lighthouse-tests.outputs.desktop_url }}"
                   }
 
                 ]
