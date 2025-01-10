@@ -35,15 +35,13 @@ jobs:
       - name: Build Web Project
         run: pnpm build:web
 
-      - name: Lighthouse on Pull Request
-        if: github.event_name == 'pull_request'
+      - name: Lighthouse Tests
         run: |
           cd apps/web
           pnpm install -g @lhci/cli
           lhci autorun --collect.preset=desktop >> output.log 2>&1
           grep -oE 'https://storage\.googleapis\.com/lighthouse-infrastructure\.appspot\.com/reports/[^[:space:]]*\.report\.html' output.log > desktop_urls.txt
-            echo "desktop_url=$(cat desktop_urls.txt)" >> $GITHUB_OUTPUT
-
+          echo "desktop_url=$(cat desktop_urls.txt)" >> $GITHUB_OUTPUT
         env:
           LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
 
