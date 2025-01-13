@@ -55,7 +55,6 @@ jobs:
           fs.appendFileSync(process.env.GITHUB_OUTPUT, `fields=${JSON.stringify(fields)}\n`);
           EOF
           node build_fields.js
-      
 
       - name: Send Slack Alert for Mobile Tests
         if: ${{ success() }}
@@ -70,7 +69,7 @@ jobs:
                 "color": "good",
                 "author_name": "${{ github.actor }}",
                 "author_icon": "${{ github.event.sender.avatar_url }}",
-                "fields": ${{ steps.build_mobile_slack_fields.outputs.fields }}
+                "value": ${{ fromJson(steps.build_mobile_slack_fields.outputs.fields)}}
               }
             ]
 
@@ -98,7 +97,7 @@ jobs:
                   },
                   {
                     "title": "Lighthouse Results URL",
-                    "value": ${{ fromJson(steps.lighthouse-mobile-tests.outputs.manifest)}}
+                    "value": ${{ fromJson(steps.build_mobile_slack_fields.outputs.fields)}}
                   }
                 ]
               }
