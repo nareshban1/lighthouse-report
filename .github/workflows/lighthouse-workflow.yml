@@ -52,7 +52,7 @@ jobs:
                   },
                   {
                     "title": "Lighthouse Results URL",
-                    "value": ${{ fromJson(steps.lighthouse-mobile-tests.outputs) }}
+                    "value": ${{ fromJson(steps.lighthouse-mobile-tests.outputs.manifest) }}
                   }
                 ]
               }
@@ -82,7 +82,7 @@ jobs:
                   },
                   {
                     "title": "Lighthouse Results URL",
-                    "value": ${{ fromJson(steps.lighthouse-mobile-tests.outputs)}}
+                    "value": ${{ fromJson(steps.lighthouse-mobile-tests.outputs.manifest)}}
                   }
                 ]
               }
@@ -129,7 +129,7 @@ jobs:
                   },
                   {
                     "title": "Lighthouse Results URL",
-                    "value": ${{ steps.lighthouse-desktop-tests.outputs }}
+                    "value": ${{ fromJson(steps.lighthouse-desktop-tests.outputs.manifest) }}
                   }
                 ]
               }
@@ -159,7 +159,7 @@ jobs:
                   },
                   {
                     "title": "Lighthouse Results URL",
-                    "value": ${{ steps.lighthouse-desktop-tests.outputs }}
+                    "value": ${{ fromJson(steps.lighthouse-desktop-tests.outputs.manifest) }}
                   }
                 ]
               }
