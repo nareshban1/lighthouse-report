@@ -48,8 +48,6 @@ jobs:
             PWA: ${item.summary.pwa??'N/A'}
             `.trim()
           }));
-          console.log(fields, manifest, JSON.stringify(fields), process.env.MANIFEST);
-
           fs.appendFileSync(process.env.GITHUB_OUTPUT, `fields=${JSON.stringify(fields)}\n`);
           EOF
           node build_fields.js
@@ -59,6 +57,8 @@ jobs:
       - name: Send Slack Alert for Success Mobile Tests
         if: ${{ success() }}
         uses: tokorom/action-slack-incoming-webhook@main
+        env:
+          INCOMING_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
         with:
           text: Lighthouse Test Passed on Mobile.
           attachments: |
@@ -75,6 +75,8 @@ jobs:
       - name: Send Slack Alert for Failed Mobile Tests
         if: ${{ failure() }}
         uses: tokorom/action-slack-incoming-webhook@main
+        env:
+          INCOMING_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
         with:
           text: Lighthouse Test Failed on Mobile.
           attachments: |
