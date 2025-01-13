@@ -40,8 +40,15 @@ jobs:
           // Construct Slack fields for each item
           const fields = manifest.map(item => ({
             title: `Results for ${item.url} are`,
-            value: `Performance: ${item.summary.performance??'N/A'}`.trim()
+            value: `
+            Performance: ${item.summary.performance??'N/A'}
+            Accessibility: ${item.summary.accessibility??'N/A'}
+            Best Practices: ${item.summary['best-practices']??'N/A'}
+            SEO: ${item.summary.seo??'N/A'}
+            PWA: ${item.summary.pwa??'N/A'}
+            `.trim()
           }));
+
           fs.appendFileSync(process.env.GITHUB_OUTPUT, `fields=${JSON.stringify(fields)}\n`);
           EOF
           node build_fields.js
