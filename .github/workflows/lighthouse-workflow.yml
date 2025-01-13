@@ -56,7 +56,7 @@ jobs:
           EOF
           node build_fields.js
 
-      - name: Send Slack Alert for Mobile Tests
+      - name: Send Slack Alert for Success Mobile Tests
         if: ${{ success() }}
         uses: tokorom/action-slack-incoming-webhook@main
         env:
@@ -69,11 +69,11 @@ jobs:
                 "color": "good",
                 "author_name": "${{ github.actor }}",
                 "author_icon": "${{ github.event.sender.avatar_url }}",
-                "value": ${{ fromJson(steps.build_mobile_slack_fields.outputs.fields)}}
+                "fields": ${{ fromJson(steps.build_mobile_slack_fields.outputs.fields) }}
               }
             ]
 
-      - name: Send Slack Alert for Mobile Tests
+      - name: Send Slack Alert for Failed Mobile Tests
         if: ${{ failure() }}
         uses: tokorom/action-slack-incoming-webhook@main
         env:
@@ -86,19 +86,6 @@ jobs:
                 "color": "good",
                 "author_name": "${{ github.actor }}",
                 "author_icon": "${{ github.event.sender.avatar_url }}",
-                "fields": [
-                  {
-                    "title": "Commit Message",
-                    "value": "${{ github.event.head_commit.message }}"
-                  },
-                  {
-                    "title": "GitHub Actions URL",
-                    "value": "${{ github.event.repository.url }}/actions/runs/${{ github.run_id }}"
-                  },
-                  {
-                    "title": "Lighthouse Results URL",
-                    "value": ${{ fromJson(steps.build_mobile_slack_fields.outputs.fields)}}
-                  }
-                ]
+                "fields": ${{ fromJson(steps.build_mobile_slack_fields.outputs.fields) }}
               }
             ]
