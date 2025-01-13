@@ -3,6 +3,7 @@
     "collect": {
       "numberOfRuns": 2,
       "settings": {
+        "emulatedFormFactor": "desktop",
         "preset": "desktop"
       }
     },

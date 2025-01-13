@@ -27,6 +27,7 @@ jobs:
             https://nennai-nyushi-navi.jp/blogs
           configPath: apps/web/lighthouserc-mobile.json
           temporaryPublicStorage: true
+          runs: 3
 
       - name: Build Slack Fields from Manifest
         id: build_mobile_slack_fields
@@ -109,6 +110,7 @@ jobs:
             https://nennai-nyushi-navi.jp/blogs
           configPath: apps/web/lighthouserc-desktop.json
           temporaryPublicStorage: true
+          runs: 3
 
       - name: Build Slack Fields from Manifest
         id: build_desktop_slack_fields
