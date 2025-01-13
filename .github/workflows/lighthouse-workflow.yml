@@ -52,7 +52,7 @@ jobs:
                   },
                   {
                     "title": "Lighthouse Results URL",
-                    "value": ${{ steps.lighthouse-mobile-tests.outputs }}
+                    "value": ${{ fromJson(steps.lighthouse-mobile-tests.outputs) }}
                   }
                 ]
               }
@@ -82,7 +82,7 @@ jobs:
                   },
                   {
                     "title": "Lighthouse Results URL",
-                    "value": ${{ steps.lighthouse-mobile-tests.outputs}}
+                    "value": ${{ fromJson(steps.lighthouse-mobile-tests.outputs)}}
                   }
                 ]
               }
