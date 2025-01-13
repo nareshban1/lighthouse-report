@@ -36,16 +36,17 @@ jobs:
           node <<EOF
             const manifest = JSON.parse(process.env.MANIFEST || '[]');
             const fields = manifest.map(item => ({
-              title: `Results for ${item.url}`,
-              value: `
-                Performance: ${item.summary.performance}
-                Accessibility: ${item.summary.accessibility}
-                Best Practices: ${item.summary['best-practices']}
-                SEO: ${item.summary.seo}
-                PWA: ${item.summary.pwa}`.trim()
+              title: \`Results for ${item.url}`\,
+              value: \`
+                Performance: \${item.summary.performance}\
+                Accessibility: \${item.summary.accessibility}\
+                Best Practices: \${item.summary['best-practices']}\
+                SEO:\${item.summary.seo}
+                PWA: \${item.summary.pwa}`\.trim()
             }));
 
-            console.log(`::set-output name=fields::${JSON.stringify(fields)}`);
+            const fs = require('fs');
+            fs.appendFileSync(process.env.GITHUB_OUTPUT, \`fields=\${JSON.stringify(fields)}\\n\`);
             EOF
         shell: bash
 
