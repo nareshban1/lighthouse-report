@@ -29,11 +29,41 @@ jobs:
           temporaryPublicStorage: true
 
       - name: Send Slack Alert for Mobile Tests
+        if: ${{ success() }}
         uses: tokorom/action-slack-incoming-webhook@main
         env:
           INCOMING_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
         with:
-          text: Lighthouse Test Results on Mobile.
+          text: Lighthouse Test Passed on Mobile.
+          attachments: |
+            [
+              {
+                "author_name": "${{ github.actor }}",
+                "author_icon": "${{ github.event.sender.avatar_url }}",
+                "fields": [
+                  {
+                    "title": "Commit Message",
+                    "value": "${{ github.event.head_commit.message }}"
+                  },
+                  {
+                    "title": "GitHub Actions URL",
+                    "value": "${{ github.event.repository.url }}/actions/runs/${{ github.run_id }}"
+                  },
+                  {
+                    "title": "Lighthouse Results URL",
+                    "value": ${{ fromJson(steps.lighthouse-mobile-tests.outputs.manifest)[0].summary.performance }}
+                  }
+                ]
+              }
+            ]
+
+      - name: Send Slack Alert for Mobile Tests
+        if: ${{ failure() }}
+        uses: tokorom/action-slack-incoming-webhook@main
+        env:
+          INCOMING_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        with:
+          text: Lighthouse Test Failed on Mobile.
           attachments: |
             [
               {
@@ -74,11 +104,41 @@ jobs:
           temporaryPublicStorage: true
 
       - name: Send Slack Alert for Desktop Tests
+        if: ${{ success() }}
         uses: tokorom/action-slack-incoming-webhook@main
         env:
           INCOMING_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
         with:
-          text: Lighthouse Test Results on Desktop.
+          text: Lighthouse Tests Passed on Desktop.
+          attachments: |
+            [
+              {
+                "author_name": "${{ github.actor }}",
+                "author_icon": "${{ github.event.sender.avatar_url }}",
+                "fields": [
+                  {
+                    "title": "Commit Message",
+                    "value": "${{ github.event.head_commit.message }}"
+                  },
+                  {
+                    "title": "GitHub Actions URL",
+                    "value": "${{ github.event.repository.url }}/actions/runs/${{ github.run_id }}"
+                  },
+                  {
+                    "title": "Lighthouse Results URL",
+                    "value": ${{ fromJson(steps.lighthouse-desktop-tests.outputs.manifest)[0].summary.performance }}
+                  }
+                ]
+              }
+            ]
+
+      - name: Send Slack Alert for Desktop Tests
+        if: ${{ failure() }}
+        uses: tokorom/action-slack-incoming-webhook@main
+        env:
+          INCOMING_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        with:
+          text: Lighthouse Tests Failed on Desktop.
           attachments: |
             [
               {
