@@ -39,13 +39,13 @@ jobs:
 
           // Construct Slack fields for each item
           const fields = manifest.map(item => ({
-            title: `Results for ${item.url}`,
+            title: `Results for ${item.url} are`,
             value: `
-            Performance: ${item.summary.performance}
-            Accessibility: ${item.summary.accessibility}
-            Best Practices: ${item.summary['best-practices']}
-            SEO: ${item.summary.seo}
-            PWA: ${item.summary.pwa}
+            Performance: ${item.summary.performance??'N/A'}
+            Accessibility: ${item.summary.accessibility??'N/A'}
+            Best Practices: ${item.summary['best-practices']??'N/A'}
+            SEO: ${item.summary.seo??'N/A'}
+            PWA: ${item.summary.pwa??'N/A'}
             `.trim()
           }));
           console.log(fields, manifest, JSON.stringify(fields), process.env.MANIFEST);
@@ -55,13 +55,6 @@ jobs:
           node build_fields.js
         env:
           MANIFEST: ${{ steps.lighthouse-mobile-tests.outputs.manifest }}
-
-      - name: Debug Slack Fields
-        if: ${{ always() }}
-        run: |
-          echo "Slack Fields: ${{ steps.lighthouse-mobile-tests.outputs.manifest  }}"
-          echo "Slack Fields: ${{ steps.build_mobile_slack_fields.outputs.fields }}"
-          echo "Slack Fields: ${{ fromJson(steps.build_mobile_slack_fields.outputs.fields) }}"
 
       - name: Send Slack Alert for Success Mobile Tests
         if: ${{ success() }}
@@ -75,7 +68,7 @@ jobs:
                 "author_name": "${{ github.actor }}",
                 "author_icon": "${{ github.event.sender.avatar_url }}",
                 "mrkdwn_in": ["fields"] 
-                "fields": ${{ fromJson(steps.build_mobile_slack_fields.outputs.fields) }}
+                "fields": ${{ steps.build_mobile_slack_fields.outputs.fields}}
               }
             ]
 
@@ -91,6 +84,6 @@ jobs:
                 "author_name": "${{ github.actor }}",
                 "author_icon": "${{ github.event.sender.avatar_url }}",
                 "mrkdwn_in": ["fields"] 
-                "fields": ${{ fromJson(steps.build_mobile_slack_fields.outputs.fields) }}
+                "fields": ${{ steps.build_mobile_slack_fields.outputs.fields }}
               }
             ]
