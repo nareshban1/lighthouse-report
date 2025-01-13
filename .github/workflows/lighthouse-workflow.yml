@@ -56,6 +56,11 @@ jobs:
           EOF
           node build_fields.js
 
+      - name: Debug Slack Fields
+        run: |
+          echo "Slack Fields: ${{ steps.build_mobile_slack_fields.outputs.fields }}"
+          echo "Slack Fields: ${{ fromJson(steps.build_mobile_slack_fields.outputs.fields) }}"
+
       - name: Send Slack Alert for Success Mobile Tests
         if: ${{ success() }}
         uses: tokorom/action-slack-incoming-webhook@main
