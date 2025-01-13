@@ -55,8 +55,7 @@ jobs:
           fs.appendFileSync(process.env.GITHUB_OUTPUT, `fields=${JSON.stringify(fields)}\n`);
           EOF
           node build_fields.js
-        outputs:
-          fields: ${{ steps.build_mobile_slack_fields.outputs.fields }}
+      
 
       - name: Send Slack Alert for Mobile Tests
         if: ${{ success() }}
