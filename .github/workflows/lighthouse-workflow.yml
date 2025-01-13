@@ -42,7 +42,7 @@ jobs:
 
 
           // Construct Slack fields for each item
-          const fields = manifest..filter(data=> data.isRepresentativeRun).map(item => ({
+          const fields = manifest.filter(data=> data.isRepresentativeRun).map(item => ({
             title: `Results for ${item.url} are`,
             value: `
             Report: ${links[item.url]?? 'N/A'}
@@ -125,7 +125,7 @@ jobs:
 
 
           // Construct Slack fields for each item
-          const fields = manifest.map(item => ({
+          const fields = manifest.filter(data=> data.isRepresentativeRun).map(item => ({
             title: `Results for ${item.url} are`,
             value: `
             Report: ${links[item.url]?? 'N/A'}
