@@ -33,22 +33,27 @@ jobs:
         if: ${{ always() }}
         run: |
           echo "MANIFEST=${{ steps.lighthouse-mobile-tests.outputs.manifest }}" >> $GITHUB_ENV
-          node <<EOF
-            const manifest = JSON.parse(process.env.MANIFEST || '[]');
-            const fields = manifest.map(item => ({
-              title: \`Results for ${item.url}`\,
-              value: \`
-                Performance: \${item.summary.performance}\
-                Accessibility: \${item.summary.accessibility}\
-                Best Practices: \${item.summary['best-practices']}\
-                SEO:\${item.summary.seo}
-                PWA: \${item.summary.pwa}`\.trim()
-            }));
+          node <<'EOF'
+          const fs = require('fs');
 
-            const fs = require('fs');
-            fs.appendFileSync(process.env.GITHUB_OUTPUT, \`fields=\${JSON.stringify(fields)}\\n\`);
-            EOF
-        shell: bash
+          // Read the JSON array from our environment
+          const manifest = JSON.parse(process.env.MANIFEST || '[]');
+
+          // Construct Slack fields for each item
+          const fields = manifest.map(item => ({
+            title: `Results for ${item.url}`,
+            value: `
+            Performance: ${item.summary.performance}
+            Accessibility: ${item.summary.accessibility}
+            Best Practices: ${item.summary['best-practices']}
+            SEO: ${item.summary.seo}
+            PWA: ${item.summary.pwa}
+            `.trim()
+          }));
+
+          // Write the output to $GITHUB_OUTPUT (the new recommended method)
+          fs.appendFileSync(process.env.GITHUB_OUTPUT, `fields=${JSON.stringify(fields)}\n`);
+          EOF
 
       - name: Send Slack Alert for Mobile Tests
         if: ${{ success() }}
