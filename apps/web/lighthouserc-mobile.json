@@ -1,9 +1,7 @@
 {
   "ci": {
     "collect": {
-      "url": ["https://nennai-nyushi-navi.jp/university-search"],
-      "startServerCommand": "pnpm start",
-      "numberOfRuns": 1
+      "numberOfRuns": 2
     },
     "assert": {
       "assertions": {
