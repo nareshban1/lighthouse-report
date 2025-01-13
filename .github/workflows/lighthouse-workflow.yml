@@ -69,6 +69,7 @@ jobs:
                 "color": "good",
                 "author_name": "${{ github.actor }}",
                 "author_icon": "${{ github.event.sender.avatar_url }}",
+                "mrkdwn_in": ["fields"] 
                 "fields": ${{ fromJson(steps.build_mobile_slack_fields.outputs.fields) }}
               }
             ]
@@ -86,6 +87,7 @@ jobs:
                 "color": "good",
                 "author_name": "${{ github.actor }}",
                 "author_icon": "${{ github.event.sender.avatar_url }}",
+                "mrkdwn_in": ["fields"] 
                 "fields": ${{ fromJson(steps.build_mobile_slack_fields.outputs.fields) }}
               }
             ]
