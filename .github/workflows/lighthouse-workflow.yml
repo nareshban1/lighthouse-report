@@ -57,6 +57,7 @@ jobs:
           node build_fields.js
 
       - name: Debug Slack Fields
+        if: ${{ always() }}
         run: |
           echo "Slack Fields: ${{ steps.build_mobile_slack_fields.outputs.fields }}"
           echo "Slack Fields: ${{ fromJson(steps.build_mobile_slack_fields.outputs.fields) }}"
@@ -64,8 +65,6 @@ jobs:
       - name: Send Slack Alert for Success Mobile Tests
         if: ${{ success() }}
         uses: tokorom/action-slack-incoming-webhook@main
-        env:
-          INCOMING_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
         with:
           text: Lighthouse Test Passed on Mobile.
           attachments: |
@@ -82,8 +81,6 @@ jobs:
       - name: Send Slack Alert for Failed Mobile Tests
         if: ${{ failure() }}
         uses: tokorom/action-slack-incoming-webhook@main
-        env:
-          INCOMING_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
         with:
           text: Lighthouse Test Failed on Mobile.
           attachments: |
