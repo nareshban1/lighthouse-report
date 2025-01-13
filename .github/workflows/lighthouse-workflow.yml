@@ -30,6 +30,7 @@ jobs:
 
       - name: Build Slack Fields from Manifest
         id: build_mobile_slack_fields
+        if: ${{ always() }}
         run: |
           echo "MANIFEST=${{ steps.lighthouse-mobile-tests.outputs.manifest }}" >> $GITHUB_ENV
           node <<EOF
