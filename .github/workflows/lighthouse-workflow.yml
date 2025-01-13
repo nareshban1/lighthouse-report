@@ -33,7 +33,7 @@ jobs:
         if: ${{ always() }}
         run: |
           echo "MANIFEST=${{ steps.lighthouse-mobile-tests.outputs.manifest }}" >> $GITHUB_ENV
-          node <<'EOF'
+          node <<'EOF' > build_fields.js
           const fs = require('fs');
 
           // Read the JSON array from our environment
@@ -54,6 +54,9 @@ jobs:
           // Write the output to $GITHUB_OUTPUT (the new recommended method)
           fs.appendFileSync(process.env.GITHUB_OUTPUT, `fields=${JSON.stringify(fields)}\n`);
           EOF
+          node build_fields.js
+        outputs:
+          fields: ${{ steps.build_mobile_slack_fields.outputs.fields }}
 
       - name: Send Slack Alert for Mobile Tests
         if: ${{ success() }}
@@ -68,7 +71,7 @@ jobs:
                 "color": "good",
                 "author_name": "${{ github.actor }}",
                 "author_icon": "${{ github.event.sender.avatar_url }}",
-                "fields": ${{ steps.build_slack_fields.outputs.fields }}
+                "fields": ${{ steps.build_mobile_slack_fields.outputs.fields }}
               }
             ]
 
