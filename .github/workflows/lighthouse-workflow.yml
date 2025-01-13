@@ -31,7 +31,6 @@ jobs:
         id: build_mobile_slack_fields
         if: ${{ always() }}
         run: |
-          echo "MANIFEST=${{ steps.lighthouse-mobile-tests.outputs.manifest }}" >> $GITHUB_ENV
           node <<'EOF' > build_fields.js
           const fs = require('fs');
 
@@ -50,10 +49,12 @@ jobs:
             `.trim()
           }));
           console.log(fields, manifest, JSON.stringify(fields), process.env.MANIFEST);
-          // Write the output to $GITHUB_OUTPUT (the new recommended method)
+
           fs.appendFileSync(process.env.GITHUB_OUTPUT, `fields=${JSON.stringify(fields)}\n`);
           EOF
           node build_fields.js
+        env:
+          MANIFEST: ${{ steps.lighthouse-mobile-tests.outputs.manifest }}
 
       - name: Debug Slack Fields
         if: ${{ always() }}
