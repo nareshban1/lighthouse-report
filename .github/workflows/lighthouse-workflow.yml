@@ -59,6 +59,7 @@ jobs:
       - name: Debug Slack Fields
         if: ${{ always() }}
         run: |
+          echo "Slack Fields: ${{ steps.lighthouse-mobile-tests.outputs.manifest  }}"
           echo "Slack Fields: ${{ steps.build_mobile_slack_fields.outputs.fields }}"
           echo "Slack Fields: ${{ fromJson(steps.build_mobile_slack_fields.outputs.fields) }}"
 
