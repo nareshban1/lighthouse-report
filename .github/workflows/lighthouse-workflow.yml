@@ -36,16 +36,19 @@ jobs:
 
           // Read the JSON array from our environment
           const manifest = JSON.parse(process.env.MANIFEST || '[]');
+          const links = JSON.parse(process.env.LINKS || '{}');
+
 
           // Construct Slack fields for each item
           const fields = manifest.map(item => ({
             title: `Results for ${item.url} are`,
             value: `
-            Performance: ${item.summary.performance??'N/A'}
-            Accessibility: ${item.summary.accessibility??'N/A'}
-            Best Practices: ${item.summary['best-practices']??'N/A'}
-            SEO: ${item.summary.seo??'N/A'}
-            PWA: ${item.summary.pwa??'N/A'}
+            Report: ${links[item.url]?? 'N/A'}
+            Performance: ${item.summary.performance ? item.summary.performance * 100 : 'N/A'}
+            Accessibility: ${item.summary.accessibility? item.summary.accessibility * 100 :'N/A'}
+            Best Practices: ${item.summary['best-practices']? item.summary['best-practices'] * 100 :'N/A'}
+            SEO: ${item.summary.seo?? item.summary.seo * 100 :'N/A'}
+            PWA: ${item.summary.pwa?? item.summary.pwa * 100 :'N/A'}
             `.trim()
           }));
 
@@ -54,6 +57,7 @@ jobs:
           node build_fields.js
         env:
           MANIFEST: ${{ steps.lighthouse-mobile-tests.outputs.manifest }}
+          LINKS: ${{ steps.lighthouse-mobile-tests.outputs.links }}
 
       - name: Send Slack Alert for Success Mobile Tests
         if: ${{ success() }}
@@ -82,7 +86,7 @@ jobs:
           attachments: |
             [
               {
-                "color": "good",
+                "color": "danger",
                 "author_name": "${{ github.actor }}",
                 "author_icon": "${{ github.event.sender.avatar_url }}",
                 "fields": ${{ steps.build_mobile_slack_fields.outputs.fields }}
