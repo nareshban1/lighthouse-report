@@ -38,6 +38,7 @@ jobs:
           attachments: |
             [
               {
+                "color": "good",
                 "author_name": "${{ github.actor }}",
                 "author_icon": "${{ github.event.sender.avatar_url }}",
                 "fields": [
@@ -51,7 +52,7 @@ jobs:
                   },
                   {
                     "title": "Lighthouse Results URL",
-                    "value": ${{ fromJson(steps.lighthouse-mobile-tests.outputs.manifest)[0].summary.performance }}
+                    "value": ${{ steps.lighthouse-mobile-tests.outputs.manifest }}
                   }
                 ]
               }
@@ -67,6 +68,7 @@ jobs:
           attachments: |
             [
               {
+                "color": "good",
                 "author_name": "${{ github.actor }}",
                 "author_icon": "${{ github.event.sender.avatar_url }}",
                 "fields": [
@@ -80,7 +82,7 @@ jobs:
                   },
                   {
                     "title": "Lighthouse Results URL",
-                    "value": ${{ fromJson(steps.lighthouse-mobile-tests.outputs.manifest)[0].summary.performance }}
+                    "value": ${{ steps.lighthouse-mobile-tests.outputs.manifest}}
                   }
                 ]
               }
@@ -113,6 +115,7 @@ jobs:
           attachments: |
             [
               {
+                "color": "good",
                 "author_name": "${{ github.actor }}",
                 "author_icon": "${{ github.event.sender.avatar_url }}",
                 "fields": [
@@ -126,7 +129,7 @@ jobs:
                   },
                   {
                     "title": "Lighthouse Results URL",
-                    "value": ${{ fromJson(steps.lighthouse-desktop-tests.outputs.manifest)[0].summary.performance }}
+                    "value": ${{ steps.lighthouse-desktop-tests.outputs.manifest }}
                   }
                 ]
               }
@@ -142,6 +145,7 @@ jobs:
           attachments: |
             [
               {
+                "color": "good",  
                 "author_name": "${{ github.actor }}",
                 "author_icon": "${{ github.event.sender.avatar_url }}",
                 "fields": [
@@ -155,7 +159,7 @@ jobs:
                   },
                   {
                     "title": "Lighthouse Results URL",
-                    "value": ${{ fromJson(steps.lighthouse-desktop-tests.outputs.manifest)[0].summary.performance }}
+                    "value": ${{ steps.lighthouse-desktop-tests.outputs.manifest }}
                   }
                 ]
               }
