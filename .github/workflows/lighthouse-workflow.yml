@@ -66,7 +66,7 @@ jobs:
         env:
           INCOMING_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
         with:
-          text: Lighthouse Test Passed on Mobile.
+          text: Lighthouse Test Passed on Mobile :tada:.
           attachments: |
             [
               {
@@ -83,7 +83,7 @@ jobs:
         env:
           INCOMING_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
         with:
-          text: Lighthouse Test Failed on Mobile.
+          text: Lighthouse Test Failed on Mobile :crying_cat_face:.
           attachments: |
             [
               {
@@ -91,5 +91,87 @@ jobs:
                 "author_name": "${{ github.actor }}",
                 "author_icon": "${{ github.event.sender.avatar_url }}",
                 "fields": ${{ steps.build_mobile_slack_fields.outputs.fields }}
+              }
+            ]
+  lighthouse-desktop:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+
+      - name: Lighthouse CI Action
+        id: lighthouse-desktop-tests
+        uses: treosh/lighthouse-ci-action@v12
+        with:
+          urls: |
+            https://nennai-nyushi-navi.jp
+            https://nennai-nyushi-navi.jp/blogs
+          configPath: apps/web/lighthouserc-desktop.json
+          temporaryPublicStorage: true
+
+      - name: Build Slack Fields from Manifest
+        id: build_desktop_slack_fields
+        if: ${{ always() }}
+        run: |
+          node <<'EOF' > build_fields.js
+          const fs = require('fs');
+
+          // Read the JSON array from our environment
+          const manifest = JSON.parse(process.env.MANIFEST || '[]');
+          const links = JSON.parse(process.env.LINKS || '{}');
+
+
+          // Construct Slack fields for each item
+          const fields = manifest.map(item => ({
+            title: `Results for ${item.url} are`,
+            value: `
+            Report: ${links[item.url]?? 'N/A'}
+            Performance: ${item.summary.performance ? item.summary.performance * 100 : 'N/A'}
+            Accessibility: ${item.summary.accessibility? item.summary.accessibility * 100 :'N/A'}
+            Best Practices: ${item.summary['best-practices']? item.summary['best-practices'] * 100 :'N/A'}
+            SEO: ${item.summary.seo? item.summary.seo * 100 :'N/A'}
+            PWA: ${item.summary.pwa? item.summary.pwa * 100 :'N/A'}
+            `.trim()
+          }));
+
+          fs.appendFileSync(process.env.GITHUB_OUTPUT, `fields=${JSON.stringify(fields)}\n`);
+          EOF
+          node build_fields.js
+        env:
+          MANIFEST: ${{ steps.lighthouse-desktop-tests.outputs.manifest }}
+          LINKS: ${{ steps.lighthouse-desktop-tests.outputs.links }}
+
+      - name: Send Slack Alert for Success Desktop Tests
+        if: ${{ success() }}
+        uses: tokorom/action-slack-incoming-webhook@main
+        env:
+          INCOMING_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        with:
+          text: Lighthouse Test Passed on Desktop :tada:.
+          attachments: |
+            [
+              {
+                "color": "good",
+                "author_name": "${{ github.actor }}",
+                "author_icon": "${{ github.event.sender.avatar_url }}",
+                "fields": ${{ steps.build_desktop_slack_fields.outputs.fields}}
+              }
+            ]
+
+      - name: Send Slack Alert for Failed Desktop Tests
+        if: ${{ failure() }}
+        uses: tokorom/action-slack-incoming-webhook@main
+        env:
+          INCOMING_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        with:
+          text: Lighthouse Test Failed on Desktop :crying_cat_face:.
+          attachments: |
+            [
+              {
+                "color": "danger",
+                "author_name": "${{ github.actor }}",
+                "author_icon": "${{ github.event.sender.avatar_url }}",
+                "fields": ${{ steps.build_desktop_slack_fields.outputs.fields }}
               }
             ]
