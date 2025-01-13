@@ -28,6 +28,26 @@ jobs:
           configPath: apps/web/lighthouserc-mobile.json
           temporaryPublicStorage: true
 
+      - name: Build Slack Fields from Manifest
+        id: build_mobile_slack_fields
+        run: |
+          echo "MANIFEST=${{ steps.lighthouse-mobile-tests.outputs.manifest }}" >> $GITHUB_ENV
+          node <<EOF
+            const manifest = JSON.parse(process.env.MANIFEST || '[]');
+            const fields = manifest.map(item => ({
+              title: `Results for ${item.url}`,
+              value: `
+                Performance: ${item.summary.performance}
+                Accessibility: ${item.summary.accessibility}
+                Best Practices: ${item.summary['best-practices']}
+                SEO: ${item.summary.seo}
+                PWA: ${item.summary.pwa}`.trim()
+            }));
+
+            console.log(`::set-output name=fields::${JSON.stringify(fields)}`);
+            EOF
+        shell: bash
+
       - name: Send Slack Alert for Mobile Tests
         if: ${{ success() }}
         uses: tokorom/action-slack-incoming-webhook@main
@@ -41,20 +61,7 @@ jobs:
                 "color": "good",
                 "author_name": "${{ github.actor }}",
                 "author_icon": "${{ github.event.sender.avatar_url }}",
-                "fields": [
-                  {
-                    "title": "Commit Message",
-                    "value": "${{ github.event.head_commit.message }}"
-                  },
-                  {
-                    "title": "GitHub Actions URL",
-                    "value": "${{ github.event.repository.url }}/actions/runs/${{ github.run_id }}"
-                  },
-                  {
-                    "title": "Lighthouse Results URL",
-                    "value": ${{ fromJson(steps.lighthouse-mobile-tests.outputs.manifest) }}
-                  }
-                ]
+                "fields": ${{ steps.build_slack_fields.outputs.fields }}
               }
             ]
 
