@@ -24,6 +24,7 @@ jobs:
         with:
           urls: |
             https://nennai-nyushi-navi.jp
+            https://nennai-nyushi-navi.jp/blogs
           configPath: apps/web/lighthouserc-mobile.json
           temporaryPublicStorage: true
 
