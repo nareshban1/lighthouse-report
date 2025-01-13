@@ -24,7 +24,6 @@ jobs:
         with:
           urls: |
             https://nennai-nyushi-navi.jp
-            https://nennai-nyushi-navi.jp/blogs
           configPath: apps/web/lighthouserc-mobile.json
           temporaryPublicStorage: true
 
@@ -50,7 +49,7 @@ jobs:
             PWA: ${item.summary.pwa}
             `.trim()
           }));
-          console.log(fields, manifest, JSON.stringify(fields));
+          console.log(fields, manifest, JSON.stringify(fields), process.env.MANIFEST);
           // Write the output to $GITHUB_OUTPUT (the new recommended method)
           fs.appendFileSync(process.env.GITHUB_OUTPUT, `fields=${JSON.stringify(fields)}\n`);
           EOF
