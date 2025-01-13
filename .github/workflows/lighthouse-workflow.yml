@@ -47,8 +47,8 @@ jobs:
             Performance: ${item.summary.performance ? item.summary.performance * 100 : 'N/A'}
             Accessibility: ${item.summary.accessibility? item.summary.accessibility * 100 :'N/A'}
             Best Practices: ${item.summary['best-practices']? item.summary['best-practices'] * 100 :'N/A'}
-            SEO: ${item.summary.seo?? item.summary.seo * 100 :'N/A'}
-            PWA: ${item.summary.pwa?? item.summary.pwa * 100 :'N/A'}
+            SEO: ${item.summary.seo? item.summary.seo * 100 :'N/A'}
+            PWA: ${item.summary.pwa? item.summary.pwa * 100 :'N/A'}
             `.trim()
           }));
 
